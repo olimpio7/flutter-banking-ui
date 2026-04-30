@@ -1,4 +1,4 @@
-name: solar_digital_layout
+name: flutter_banking_ui
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0+1
@@ -17,3 +17,27 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: Roble
+      fonts:
+        - asset: assets/fonts/Roble.ttf
+
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter.ttf
+      
+    - family: SF-Pro
+      fonts:
+        - asset: assets/fonts/SF-Pro.ttf
+      
+  assets:
+    - assets/images/Kate.jpg
+    - assets/images/Dave.jpg
+    - assets/images/Jackie.jpg
+    - assets/images/Tom.jpg
+    - assets/images/Felca.jpg
+    - assets/images/deel.jpg
+    - assets/images/mastercard.jpg
+    - assets/images/visa.jpg
+    - assets/images/paypal.jpg
