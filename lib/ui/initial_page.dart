@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_banking_ui/main.dart';
+
+final TextStyle text = TextStyle(fontSize: 18);
+
+final TextStyle subText = TextStyle(
+  fontSize: 15,
+  color: const Color(0xFF9E9E9E),
+);
 
 class InitialPage extends StatelessWidget {
   const InitialPage({super.key});

@@ -5,13 +5,6 @@ void main() {
   runApp(const MainApp());
 }
 
-const TextStyle text = TextStyle(fontSize: 18);
-
-const TextStyle subText = TextStyle(
-  fontSize: 15,
-  color: Color(0xFF9E9E9E),
-);
-
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
