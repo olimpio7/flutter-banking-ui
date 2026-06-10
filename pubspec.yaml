@@ -22,14 +22,6 @@ flutter:
     - family: Roble
       fonts:
         - asset: assets/fonts/Roble.ttf
-
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter.ttf
-      
-    - family: SF-Pro
-      fonts:
-        - asset: assets/fonts/SF-Pro.ttf
       
   assets:
     - assets/images/Kate.jpg

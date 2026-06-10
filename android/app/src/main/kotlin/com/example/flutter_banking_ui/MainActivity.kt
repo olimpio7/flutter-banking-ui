@@ -1,4 +1,4 @@
-package com.example.solar_digital_layout
+package com.example.flutter_banking_ui
 
 import io.flutter.embedding.android.FlutterActivity
 

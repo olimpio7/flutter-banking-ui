@@ -1,6 +1,6 @@
 {
-    "name": "solar_digital_layout",
-    "short_name": "solar_digital_layout",
+    "name": "flutter_banking_ui",
+    "short_name": "flutter_banking_ui",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
