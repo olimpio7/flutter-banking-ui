@@ -18,4 +18,5 @@ class MyAccountDao extends DatabaseAccessor<AppDatabase> with _$MyAccountDaoMixi
 
   Future updateMyAccount(MyAccount account) => update(myAccounts).replace(account);
 
+  Future deleteMyAccount(MyAccount account) => delete(myAccounts).delete(account);
 }

@@ -34,6 +34,31 @@ class MyAccountBloc extends Bloc<MyAccountEvent, MyAccountState>{
       } catch (e) {
         emit(MyAccountErrorState('Erro ao criar a conta: $e'));
       }
-    }));
+    })
+    );
+
+    on<UpdateMyAccountEvent>(((event, emit) async {
+      emit(MyAccountLoadingState());
+
+      try {
+        await _dao.updateMyAccount(event.account);
+        add(LoadMyAccountEvent());
+      } catch (e) {
+        emit(MyAccountErrorState('Erro ao atualizar a conta: $e'));
+      }
+    })
+    );
+
+    on<DeleteMyAccountEvent>(((event, emit) async {
+      emit(MyAccountLoadingState());
+
+      try {
+        await _dao.deleteMyAccount(event.account);
+        add(LoadMyAccountEvent());
+      } catch (e) {
+        emit(MyAccountErrorState('Erro ao excluir a conta: $e'));
+      }
+    })
+    );
   }
 }
