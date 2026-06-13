@@ -4,7 +4,7 @@ import 'package:flutter_banking_ui/bloc/my_account/my_account_state.dart';
 import 'package:flutter_banking_ui/data/database/app_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/my_account/my_account_event.dart';
+import '../../bloc/my_account/my_account_event.dart';
 
 final TextStyle text = TextStyle(fontSize: 18);
 
@@ -55,11 +55,9 @@ class InitialPage extends StatelessWidget {
               }
 
               if (state is MyAccountLoadedState) {
-                final balanceFormatted = state.account.balance.toStringAsFixed(
-                  2,
-                );
+                final balanceFormatted = state.account.balance.toStringAsFixed(2);
                 final parts = balanceFormatted.split('.');
-
+                  
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -98,6 +96,7 @@ class InitialPage extends StatelessWidget {
                         ),
                       ],
                     ),
+                    
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Row(

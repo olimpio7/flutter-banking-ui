@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_banking_ui/bloc/my_account/my_account_bloc.dart';
 import 'package:flutter_banking_ui/bloc/my_account/my_account_event.dart';
 import 'package:flutter_banking_ui/data/database/dao/my_account_dao.dart';
-import 'package:flutter_banking_ui/ui/initial_page.dart';
+import 'package:flutter_banking_ui/ui/pages/initial_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'data/database/app_database.dart';
