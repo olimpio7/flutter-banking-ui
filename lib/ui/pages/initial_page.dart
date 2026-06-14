@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_banking_ui/bloc/my_account/my_account_bloc.dart';
 import 'package:flutter_banking_ui/bloc/my_account/my_account_state.dart';
 import 'package:flutter_banking_ui/data/database/app_database.dart';
+import 'package:flutter_banking_ui/ui/pages/add_favorites_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../bloc/contact/contact_bloc.dart';
+import '../../bloc/contact/contact_state.dart';
 import '../../bloc/my_account/my_account_event.dart';
 
 final TextStyle text = TextStyle(fontSize: 18);
@@ -55,160 +59,187 @@ class InitialPage extends StatelessWidget {
               }
 
               if (state is MyAccountLoadedState) {
-                final balanceFormatted = state.account.balance.toStringAsFixed(2);
+                final balanceFormatted = state.account.balance.toStringAsFixed(
+                  2,
+                );
                 final parts = balanceFormatted.split('.');
-                  
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SoftContainer(
-                          padding: EdgeInsets.fromLTRB(1, 1, 12, 1),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 25,
-                                backgroundImage: AssetImage(
-                                  'assets/images/deel.jpg',
-                                ),
-                              ),
-                              Padding(padding: EdgeInsets.only(right: 8.0)),
-                              Text(state.account.name, style: text),
-                            ],
-                          ),
-                        ),
-                        SoftContainer(child: Icon(Icons.notifications_none)),
-                      ],
-                    ),
-                    const Padding(padding: EdgeInsets.only(top: 8.0)),
-                    Text('Seu Saldo', style: subText),
-                    Row(
-                      children: [
-                        Text(
-                          "R\$${parts[0]}.",
-                          style: text.copyWith(fontSize: 45),
-                        ),
-                        Text(
-                          parts[1], 
-                          style: subText.copyWith(fontSize: 45)
-                        ),
-                      ],
-                    ),
-                    
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
+
+                return SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: ActionButton(
-                              textAction: 'Enviar',
-                              icon: Icons.north_east,
-                              iconRight: true,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsetsGeometry.symmetric(
-                              horizontal: 4.0,
-                            ),
-                          ),
-                          Expanded(
-                            child: ActionButton(
-                              textAction: 'Receber',
-                              icon: Icons.south_west,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SoftContainer(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Enviar Novamente', style: text),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Transactions(
-                                  name: 'Kate',
-                                  imagePath: 'assets/images/Kate.jpg',
-                                  logoPayment: 'assets/images/visa.jpg',
-                                ),
-                              ),
-                              Expanded(
-                                child: Transactions(
-                                  name: 'Dave',
-                                  imagePath: 'assets/images/Dave.jpg',
-                                  logoPayment: 'assets/images/visa.jpg',
-                                ),
-                              ),
-                              Expanded(
-                                child: Transactions(
-                                  name: 'Jackie',
-                                  imagePath: 'assets/images/Jackie.jpg',
-                                  logoPayment: 'assets/images/paypal.jpg',
-                                ),
-                              ),
-                              Expanded(
-                                child: Transactions(
-                                  name: 'Tom',
-                                  imagePath: 'assets/images/Tom.jpg',
-                                  logoPayment: 'assets/images/mastercard.jpg',
-                                ),
-                              ),
-                              Expanded(
-                                child: Transactions(
-                                  name: 'Felca',
-                                  imagePath: 'assets/images/Felca.jpg',
-                                  logoPayment: 'assets/images/paypal.jpg',
-                                ),
-                              ),
-                            ],
-                          ),
                           SoftContainer(
-                            color: Colors.grey[100],
-                            child: Column(
+                            padding: EdgeInsets.fromLTRB(1, 1, 12, 1),
+                            child: Row(
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Transações Recentes', style: text),
-                                    Text('Ver mais', style: subText),
-                                  ],
+                                CircleAvatar(
+                                  radius: 25,
+                                  backgroundImage: AssetImage(
+                                    'assets/images/deel.jpg',
+                                  ),
                                 ),
-                                TransactionsRecently(
-                                  icon: Icons.shopping_cart,
-                                  namePayment: 'Frutaria',
-                                  valuePayment: '-\$189.0',
-                                  detailPayment: '23 Jan • 3:40 PM',
-                                ),
-                                TransactionsRecently(
-                                  imagePath2: 'assets/images/Kate.jpg',
-                                  namePayment: 'kate',
-                                  valuePayment: '+\$250.0',
-                                  detailPayment: '22 Jan • 5:33 PM',
-                                ),
-                                TransactionsRecently(
-                                  imagePath2: 'assets/images/Felca.jpg',
-                                  namePayment: 'Felca',
-                                  valuePayment: '+\$300.0',
-                                  detailPayment: '21 Jan • 6:19 PM',
-                                ),
-                                TransactionsRecently(
-                                  icon: Icons.apple,
-                                  namePayment: 'App Store',
-                                  valuePayment: '-\$24.99',
-                                  detailPayment: '20 Jan • 1:22 PM',
-                                ),
+                                Padding(padding: EdgeInsets.only(right: 8.0)),
+                                Text(state.account.name, style: text),
                               ],
                             ),
                           ),
+                          SoftContainer(child: Icon(Icons.notifications_none)),
                         ],
                       ),
-                    ),
-                  ],
+                      const Padding(padding: EdgeInsets.only(top: 8.0)),
+                      Text('Seu Saldo', style: subText),
+                      Row(
+                        children: [
+                          Text(
+                            "R\$${parts[0]}.",
+                            style: text.copyWith(fontSize: 45),
+                          ),
+                          Text(parts[1], style: subText.copyWith(fontSize: 45)),
+                        ],
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ActionButton(
+                                textAction: 'Enviar',
+                                icon: Icons.north_east,
+                                iconRight: true,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 4.0),
+                            ),
+                            Expanded(
+                              child: ActionButton(
+                                textAction: 'Receber',
+                                icon: Icons.south_west,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SoftContainer(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Favoritos', style: text),
+                                TextButton(
+                                  onPressed: () {},
+                                  style: ButtonStyle(
+                                    overlayColor: WidgetStateProperty.all(
+                                      Colors.transparent,
+                                    ),
+                                    padding: WidgetStateProperty.all(
+                                      EdgeInsets.zero,
+                                    ),
+                                    foregroundColor:
+                                        WidgetStateProperty.resolveWith((
+                                          states,
+                                        ) {
+                                          if (states.contains(
+                                            WidgetState.pressed,
+                                          )) {
+                                            return Colors.blue;
+                                          }
+                                          return const Color(0xFF9E9E9E);
+                                        }),
+                                  ),
+                                  child: Text('Gerenciar'),
+                                ),
+                              ],
+                            ),
+
+                            BlocBuilder<ContactBloc, ContactState>(
+                              builder: (context, state) {
+                                if (state is ContactLoadingState) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+
+                                if (state is ContactErrorState) {
+                                  return Text(state.message);
+                                }
+
+                                if (state is ContactLoadedState) {
+                                  return SizedBox(
+                                    height: 85,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: state.contacts.length + 1,
+                                      itemBuilder: (context, index) {
+                                        if (index == state.contacts.length) {
+                                          return const AddFavoriteButton();
+                                        }
+
+                                        final contact = state.contacts[index];
+
+                                        return Favorites(
+                                          name: contact.name,
+                                          imagePath: contact.avatar,
+                                          logoPayment: contact.paymentLogo,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            ),
+
+                            SoftContainer(
+                              color: Colors.grey[100],
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Transações Recentes', style: text),
+                                      Text('Ver mais', style: subText),
+                                    ],
+                                  ),
+                                  TransactionsRecently(
+                                    icon: Icons.shopping_cart,
+                                    namePayment: 'Frutaria',
+                                    valuePayment: '-\$189.0',
+                                    detailPayment: '23 Jan • 3:40 PM',
+                                  ),
+                                  TransactionsRecently(
+                                    imagePath2: 'assets/images/Kate.jpg',
+                                    namePayment: 'kate',
+                                    valuePayment: '+\$250.0',
+                                    detailPayment: '22 Jan • 5:33 PM',
+                                  ),
+                                  TransactionsRecently(
+                                    imagePath2: 'assets/images/Felca.jpg',
+                                    namePayment: 'Felca',
+                                    valuePayment: '+\$300.0',
+                                    detailPayment: '21 Jan • 6:19 PM',
+                                  ),
+                                  TransactionsRecently(
+                                    icon: Icons.apple,
+                                    namePayment: 'App Store',
+                                    valuePayment: '-\$24.99',
+                                    detailPayment: '20 Jan • 1:22 PM',
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               }
               return const SizedBox.shrink();
@@ -248,45 +279,79 @@ class ActionButton extends StatelessWidget {
   }
 }
 
-class Transactions extends StatelessWidget {
+class Favorites extends StatelessWidget {
   final String name;
-  final String imagePath;
+  final String? imagePath;
   final String? logoPayment;
 
-  const Transactions({
+  const Favorites({
     super.key,
     required this.name,
-    required this.imagePath,
+    this.imagePath,
     this.logoPayment,
   });
 
+  String getDisplayName(String name) {
+    final firstName = name.trim().split(' ').first;
+
+    if (firstName.length > 10) {
+      return '${firstName.substring(0, 10)}...';
+    }
+    return firstName;
+  }
+
+  String getInitials(String name) {
+    final parts = name.trim().split(' ');
+
+    if (parts.length == 1) {
+      return parts.first[0].toUpperCase();
+    }
+    return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              CircleAvatar(radius: 25, backgroundImage: AssetImage(imagePath)),
-              Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 1.5),
-                  image: logoPayment != null
-                      ? DecorationImage(image: AssetImage(logoPayment!))
+    return SizedBox(
+      width: 70,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundImage: imagePath != null
+                      ? AssetImage(imagePath!)
                       : null,
+                  child: imagePath == null ? Text(getInitials(name)) : null,
                 ),
-              ),
-            ],
+                Container(
+                  width: 18,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5),
+                    image: logoPayment != null
+                        ? DecorationImage(image: AssetImage(logoPayment!))
+                        : null,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        Text(name, style: text),
-      ],
+
+          Text(
+            getDisplayName(name),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: subText,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -375,6 +440,42 @@ class TransactionsRecently extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class AddFavoriteButton extends StatelessWidget {
+  const AddFavoriteButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: BoxBorder.all(color: Color(0xFF9E9E9E), width: .2),
+          ),
+
+          child: IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<ContactBloc>(),
+                    child: const AddFavoritePage(),
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.add),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text('Novo', style: subText),
+      ],
     );
   }
 }

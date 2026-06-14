@@ -7,7 +7,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_banking_ui/data/database/app_database.dart';
-import 'package:flutter_banking_ui/data/database/dao/my_account_dao.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_banking_ui/main.dart';
@@ -15,7 +14,7 @@ import 'package:flutter_banking_ui/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MainApp(dao: MyAccountDao(AppDatabase())));
+    await tester.pumpWidget(MainApp(database: AppDatabase()));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
