@@ -612,6 +612,20 @@ class $TransactionsTable extends Transactions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _contactIdMeta = const VerificationMeta(
+    'contactId',
+  );
+  @override
+  late final GeneratedColumn<int> contactId = GeneratedColumn<int>(
+    'contact_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES contacts (id)',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -619,6 +633,7 @@ class $TransactionsTable extends Transactions
     value,
     type,
     createdAt,
+    contactId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -670,6 +685,12 @@ class $TransactionsTable extends Transactions
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('contact_id')) {
+      context.handle(
+        _contactIdMeta,
+        contactId.isAcceptableOrUnknown(data['contact_id']!, _contactIdMeta),
+      );
+    }
     return context;
   }
 
@@ -699,6 +720,10 @@ class $TransactionsTable extends Transactions
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      contactId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}contact_id'],
+      ),
     );
   }
 
@@ -714,12 +739,14 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final double value;
   final String type;
   final DateTime createdAt;
+  final int? contactId;
   const Transaction({
     required this.id,
     required this.description,
     required this.value,
     required this.type,
     required this.createdAt,
+    this.contactId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -729,6 +756,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     map['value'] = Variable<double>(value);
     map['type'] = Variable<String>(type);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || contactId != null) {
+      map['contact_id'] = Variable<int>(contactId);
+    }
     return map;
   }
 
@@ -739,6 +769,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       value: Value(value),
       type: Value(type),
       createdAt: Value(createdAt),
+      contactId: contactId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contactId),
     );
   }
 
@@ -753,6 +786,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       value: serializer.fromJson<double>(json['value']),
       type: serializer.fromJson<String>(json['type']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      contactId: serializer.fromJson<int?>(json['contactId']),
     );
   }
   @override
@@ -764,6 +798,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'value': serializer.toJson<double>(value),
       'type': serializer.toJson<String>(type),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'contactId': serializer.toJson<int?>(contactId),
     };
   }
 
@@ -773,12 +808,14 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     double? value,
     String? type,
     DateTime? createdAt,
+    Value<int?> contactId = const Value.absent(),
   }) => Transaction(
     id: id ?? this.id,
     description: description ?? this.description,
     value: value ?? this.value,
     type: type ?? this.type,
     createdAt: createdAt ?? this.createdAt,
+    contactId: contactId.present ? contactId.value : this.contactId,
   );
   Transaction copyWithCompanion(TransactionsCompanion data) {
     return Transaction(
@@ -789,6 +826,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       value: data.value.present ? data.value.value : this.value,
       type: data.type.present ? data.type.value : this.type,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      contactId: data.contactId.present ? data.contactId.value : this.contactId,
     );
   }
 
@@ -799,13 +837,15 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('description: $description, ')
           ..write('value: $value, ')
           ..write('type: $type, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('contactId: $contactId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, description, value, type, createdAt);
+  int get hashCode =>
+      Object.hash(id, description, value, type, createdAt, contactId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -814,7 +854,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.description == this.description &&
           other.value == this.value &&
           other.type == this.type &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.contactId == this.contactId);
 }
 
 class TransactionsCompanion extends UpdateCompanion<Transaction> {
@@ -823,12 +864,14 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<double> value;
   final Value<String> type;
   final Value<DateTime> createdAt;
+  final Value<int?> contactId;
   const TransactionsCompanion({
     this.id = const Value.absent(),
     this.description = const Value.absent(),
     this.value = const Value.absent(),
     this.type = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.contactId = const Value.absent(),
   });
   TransactionsCompanion.insert({
     this.id = const Value.absent(),
@@ -836,6 +879,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     required double value,
     required String type,
     required DateTime createdAt,
+    this.contactId = const Value.absent(),
   }) : description = Value(description),
        value = Value(value),
        type = Value(type),
@@ -846,6 +890,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<double>? value,
     Expression<String>? type,
     Expression<DateTime>? createdAt,
+    Expression<int>? contactId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -853,6 +898,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (value != null) 'value': value,
       if (type != null) 'type': type,
       if (createdAt != null) 'created_at': createdAt,
+      if (contactId != null) 'contact_id': contactId,
     });
   }
 
@@ -862,6 +908,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Value<double>? value,
     Value<String>? type,
     Value<DateTime>? createdAt,
+    Value<int?>? contactId,
   }) {
     return TransactionsCompanion(
       id: id ?? this.id,
@@ -869,6 +916,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       value: value ?? this.value,
       type: type ?? this.type,
       createdAt: createdAt ?? this.createdAt,
+      contactId: contactId ?? this.contactId,
     );
   }
 
@@ -890,6 +938,9 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (contactId.present) {
+      map['contact_id'] = Variable<int>(contactId.value);
+    }
     return map;
   }
 
@@ -900,7 +951,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('description: $description, ')
           ..write('value: $value, ')
           ..write('type: $type, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('contactId: $contactId')
           ..write(')'))
         .toString();
   }
@@ -1087,6 +1139,29 @@ typedef $$ContactsTableUpdateCompanionBuilder =
       Value<String?> paymentLogo,
     });
 
+final class $$ContactsTableReferences
+    extends BaseReferences<_$AppDatabase, $ContactsTable, Contact> {
+  $$ContactsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$TransactionsTable, List<Transaction>>
+  _transactionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.transactions,
+    aliasName: $_aliasNameGenerator(db.contacts.id, db.transactions.contactId),
+  );
+
+  $$TransactionsTableProcessedTableManager get transactionsRefs {
+    final manager = $$TransactionsTableTableManager(
+      $_db,
+      $_db.transactions,
+    ).filter((f) => f.contactId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_transactionsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
 class $$ContactsTableFilterComposer
     extends Composer<_$AppDatabase, $ContactsTable> {
   $$ContactsTableFilterComposer({
@@ -1115,6 +1190,31 @@ class $$ContactsTableFilterComposer
     column: $table.paymentLogo,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> transactionsRefs(
+    Expression<bool> Function($$TransactionsTableFilterComposer f) f,
+  ) {
+    final $$TransactionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.transactions,
+      getReferencedColumn: (t) => t.contactId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TransactionsTableFilterComposer(
+            $db: $db,
+            $table: $db.transactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ContactsTableOrderingComposer
@@ -1169,6 +1269,31 @@ class $$ContactsTableAnnotationComposer
     column: $table.paymentLogo,
     builder: (column) => column,
   );
+
+  Expression<T> transactionsRefs<T extends Object>(
+    Expression<T> Function($$TransactionsTableAnnotationComposer a) f,
+  ) {
+    final $$TransactionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.transactions,
+      getReferencedColumn: (t) => t.contactId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TransactionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.transactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ContactsTableTableManager
@@ -1182,9 +1307,9 @@ class $$ContactsTableTableManager
           $$ContactsTableAnnotationComposer,
           $$ContactsTableCreateCompanionBuilder,
           $$ContactsTableUpdateCompanionBuilder,
-          (Contact, BaseReferences<_$AppDatabase, $ContactsTable, Contact>),
+          (Contact, $$ContactsTableReferences),
           Contact,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool transactionsRefs})
         > {
   $$ContactsTableTableManager(_$AppDatabase db, $ContactsTable table)
     : super(
@@ -1222,9 +1347,42 @@ class $$ContactsTableTableManager
                 paymentLogo: paymentLogo,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ContactsTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({transactionsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (transactionsRefs) db.transactions],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (transactionsRefs)
+                    await $_getPrefetchedData<
+                      Contact,
+                      $ContactsTable,
+                      Transaction
+                    >(
+                      currentTable: table,
+                      referencedTable: $$ContactsTableReferences
+                          ._transactionsRefsTable(db),
+                      managerFromTypedResult: (p0) => $$ContactsTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).transactionsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.contactId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -1239,9 +1397,9 @@ typedef $$ContactsTableProcessedTableManager =
       $$ContactsTableAnnotationComposer,
       $$ContactsTableCreateCompanionBuilder,
       $$ContactsTableUpdateCompanionBuilder,
-      (Contact, BaseReferences<_$AppDatabase, $ContactsTable, Contact>),
+      (Contact, $$ContactsTableReferences),
       Contact,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool transactionsRefs})
     >;
 typedef $$TransactionsTableCreateCompanionBuilder =
     TransactionsCompanion Function({
@@ -1250,6 +1408,7 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       required double value,
       required String type,
       required DateTime createdAt,
+      Value<int?> contactId,
     });
 typedef $$TransactionsTableUpdateCompanionBuilder =
     TransactionsCompanion Function({
@@ -1258,7 +1417,32 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<double> value,
       Value<String> type,
       Value<DateTime> createdAt,
+      Value<int?> contactId,
     });
+
+final class $$TransactionsTableReferences
+    extends BaseReferences<_$AppDatabase, $TransactionsTable, Transaction> {
+  $$TransactionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ContactsTable _contactIdTable(_$AppDatabase db) =>
+      db.contacts.createAlias(
+        $_aliasNameGenerator(db.transactions.contactId, db.contacts.id),
+      );
+
+  $$ContactsTableProcessedTableManager? get contactId {
+    final $_column = $_itemColumn<int>('contact_id');
+    if ($_column == null) return null;
+    final manager = $$ContactsTableTableManager(
+      $_db,
+      $_db.contacts,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_contactIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
 
 class $$TransactionsTableFilterComposer
     extends Composer<_$AppDatabase, $TransactionsTable> {
@@ -1293,6 +1477,29 @@ class $$TransactionsTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  $$ContactsTableFilterComposer get contactId {
+    final $$ContactsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.contactId,
+      referencedTable: $db.contacts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ContactsTableFilterComposer(
+            $db: $db,
+            $table: $db.contacts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$TransactionsTableOrderingComposer
@@ -1328,6 +1535,29 @@ class $$TransactionsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$ContactsTableOrderingComposer get contactId {
+    final $$ContactsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.contactId,
+      referencedTable: $db.contacts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ContactsTableOrderingComposer(
+            $db: $db,
+            $table: $db.contacts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$TransactionsTableAnnotationComposer
@@ -1355,6 +1585,29 @@ class $$TransactionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$ContactsTableAnnotationComposer get contactId {
+    final $$ContactsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.contactId,
+      referencedTable: $db.contacts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ContactsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.contacts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$TransactionsTableTableManager
@@ -1368,12 +1621,9 @@ class $$TransactionsTableTableManager
           $$TransactionsTableAnnotationComposer,
           $$TransactionsTableCreateCompanionBuilder,
           $$TransactionsTableUpdateCompanionBuilder,
-          (
-            Transaction,
-            BaseReferences<_$AppDatabase, $TransactionsTable, Transaction>,
-          ),
+          (Transaction, $$TransactionsTableReferences),
           Transaction,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool contactId})
         > {
   $$TransactionsTableTableManager(_$AppDatabase db, $TransactionsTable table)
     : super(
@@ -1393,12 +1643,14 @@ class $$TransactionsTableTableManager
                 Value<double> value = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<int?> contactId = const Value.absent(),
               }) => TransactionsCompanion(
                 id: id,
                 description: description,
                 value: value,
                 type: type,
                 createdAt: createdAt,
+                contactId: contactId,
               ),
           createCompanionCallback:
               ({
@@ -1407,17 +1659,64 @@ class $$TransactionsTableTableManager
                 required double value,
                 required String type,
                 required DateTime createdAt,
+                Value<int?> contactId = const Value.absent(),
               }) => TransactionsCompanion.insert(
                 id: id,
                 description: description,
                 value: value,
                 type: type,
                 createdAt: createdAt,
+                contactId: contactId,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TransactionsTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({contactId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (contactId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.contactId,
+                                referencedTable: $$TransactionsTableReferences
+                                    ._contactIdTable(db),
+                                referencedColumn: $$TransactionsTableReferences
+                                    ._contactIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ),
       );
 }
@@ -1432,12 +1731,9 @@ typedef $$TransactionsTableProcessedTableManager =
       $$TransactionsTableAnnotationComposer,
       $$TransactionsTableCreateCompanionBuilder,
       $$TransactionsTableUpdateCompanionBuilder,
-      (
-        Transaction,
-        BaseReferences<_$AppDatabase, $TransactionsTable, Transaction>,
-      ),
+      (Transaction, $$TransactionsTableReferences),
       Transaction,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool contactId})
     >;
 
 class $AppDatabaseManager {

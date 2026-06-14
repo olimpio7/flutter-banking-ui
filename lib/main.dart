@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_banking_ui/bloc/contact/contact_bloc.dart';
-import 'package:flutter_banking_ui/bloc/contact/contact_event.dart';
-import 'package:flutter_banking_ui/bloc/my_account/my_account_bloc.dart';
-import 'package:flutter_banking_ui/bloc/my_account/my_account_event.dart';
-import 'package:flutter_banking_ui/bloc/transactions/transaction_bloc.dart';
-import 'package:flutter_banking_ui/bloc/transactions/transaction_event.dart';
-import 'package:flutter_banking_ui/data/database/dao/contact_dao.dart';
-import 'package:flutter_banking_ui/data/database/dao/my_account_dao.dart';
-import 'package:flutter_banking_ui/data/database/dao/transaction_dao.dart';
-import 'package:flutter_banking_ui/ui/pages/initial_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'bloc/contact/contact_bloc.dart';
+import 'bloc/contact/contact_event.dart';
+import 'bloc/my_account/my_account_bloc.dart';
+import 'bloc/my_account/my_account_event.dart';
+import 'bloc/transactions/transaction_bloc.dart';
+import 'bloc/transactions/transaction_event.dart';
 import 'data/database/app_database.dart';
+import 'data/database/dao/contact_dao.dart';
+import 'data/database/dao/my_account_dao.dart';
+import 'data/database/dao/transaction_dao.dart';
+import 'ui/pages/initial_page.dart';
 
 void main() {
   runApp(MainApp(database: AppDatabase()));

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter_banking_ui/bloc/my_account/my_account_bloc.dart';
-import 'package:flutter_banking_ui/bloc/my_account/my_account_state.dart';
-import 'package:flutter_banking_ui/data/database/app_database.dart';
-import 'package:flutter_banking_ui/ui/pages/add_favorites_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/contact/contact_bloc.dart';
 import '../../bloc/contact/contact_state.dart';
+import '../../bloc/my_account/my_account_bloc.dart';
 import '../../bloc/my_account/my_account_event.dart';
+import '../../bloc/my_account/my_account_state.dart';
+import '../../bloc/transactions/transaction_bloc.dart';
+import '../../bloc/transactions/transaction_state.dart';
+import '../../data/database/app_database.dart';
+import 'add_favorites_page.dart';
 
 final TextStyle text = TextStyle(fontSize: 18);
 
@@ -64,67 +65,67 @@ class InitialPage extends StatelessWidget {
                 );
                 final parts = balanceFormatted.split('.');
 
-                return SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SoftContainer(
-                            padding: EdgeInsets.fromLTRB(1, 1, 12, 1),
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 25,
-                                  backgroundImage: AssetImage(
-                                    'assets/images/deel.jpg',
-                                  ),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SoftContainer(
+                          padding: EdgeInsets.fromLTRB(1, 1, 12, 1),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 25,
+                                backgroundImage: AssetImage(
+                                  'assets/images/deel.jpg',
                                 ),
-                                Padding(padding: EdgeInsets.only(right: 8.0)),
-                                Text(state.account.name, style: text),
-                              ],
-                            ),
-                          ),
-                          SoftContainer(child: Icon(Icons.notifications_none)),
-                        ],
-                      ),
-                      const Padding(padding: EdgeInsets.only(top: 8.0)),
-                      Text('Seu Saldo', style: subText),
-                      Row(
-                        children: [
-                          Text(
-                            "R\$${parts[0]}.",
-                            style: text.copyWith(fontSize: 45),
-                          ),
-                          Text(parts[1], style: subText.copyWith(fontSize: 45)),
-                        ],
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: ActionButton(
-                                textAction: 'Enviar',
-                                icon: Icons.north_east,
-                                iconRight: true,
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 4.0),
-                            ),
-                            Expanded(
-                              child: ActionButton(
-                                textAction: 'Receber',
-                                icon: Icons.south_west,
-                              ),
-                            ),
-                          ],
+                              Padding(padding: EdgeInsets.only(right: 8.0)),
+                              Text(state.account.name, style: text),
+                            ],
+                          ),
                         ),
+                        SoftContainer(child: Icon(Icons.notifications_none)),
+                      ],
+                    ),
+                    const Padding(padding: EdgeInsets.only(top: 8.0)),
+                    Text('Seu Saldo', style: subText),
+                    Row(
+                      children: [
+                        Text(
+                          "R\$${parts[0]}.",
+                          style: text.copyWith(fontSize: 45),
+                        ),
+                        Text(parts[1], style: subText.copyWith(fontSize: 45)),
+                      ],
+                    ),
+                
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ActionButton(
+                              textAction: 'Enviar',
+                              icon: Icons.north_east,
+                              iconRight: true,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 4.0),
+                          ),
+                          Expanded(
+                            child: ActionButton(
+                              textAction: 'Receber',
+                              icon: Icons.south_west,
+                            ),
+                          ),
+                        ],
                       ),
-                      SoftContainer(
+                    ),
+                    Expanded(
+                      child: SoftContainer(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -157,7 +158,7 @@ class InitialPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-
+                                      
                             BlocBuilder<ContactBloc, ContactState>(
                               builder: (context, state) {
                                 if (state is ContactLoadingState) {
@@ -165,11 +166,11 @@ class InitialPage extends StatelessWidget {
                                     child: CircularProgressIndicator(),
                                   );
                                 }
-
+                                      
                                 if (state is ContactErrorState) {
                                   return Text(state.message);
                                 }
-
+                                      
                                 if (state is ContactLoadedState) {
                                   return SizedBox(
                                     height: 85,
@@ -180,9 +181,9 @@ class InitialPage extends StatelessWidget {
                                         if (index == state.contacts.length) {
                                           return const AddFavoriteButton();
                                         }
-
+                                      
                                         final contact = state.contacts[index];
-
+                                      
                                         return Favorites(
                                           name: contact.name,
                                           imagePath: contact.avatar,
@@ -195,51 +196,82 @@ class InitialPage extends StatelessWidget {
                                 return const SizedBox.shrink();
                               },
                             ),
-
-                            SoftContainer(
-                              color: Colors.grey[100],
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('Transações Recentes', style: text),
-                                      Text('Ver mais', style: subText),
-                                    ],
-                                  ),
-                                  TransactionsRecently(
-                                    icon: Icons.shopping_cart,
-                                    namePayment: 'Frutaria',
-                                    valuePayment: '-\$189.0',
-                                    detailPayment: '23 Jan • 3:40 PM',
-                                  ),
-                                  TransactionsRecently(
-                                    imagePath2: 'assets/images/Kate.jpg',
-                                    namePayment: 'kate',
-                                    valuePayment: '+\$250.0',
-                                    detailPayment: '22 Jan • 5:33 PM',
-                                  ),
-                                  TransactionsRecently(
-                                    imagePath2: 'assets/images/Felca.jpg',
-                                    namePayment: 'Felca',
-                                    valuePayment: '+\$300.0',
-                                    detailPayment: '21 Jan • 6:19 PM',
-                                  ),
-                                  TransactionsRecently(
-                                    icon: Icons.apple,
-                                    namePayment: 'App Store',
-                                    valuePayment: '-\$24.99',
-                                    detailPayment: '20 Jan • 1:22 PM',
-                                  ),
-                                ],
+                                      
+                            Expanded(
+                              child: SoftContainer(
+                                color: Colors.grey[100],
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Transações Recentes', style: text),
+                                        Text('Ver mais', style: subText),
+                                      ],
+                                    ),
+                                    BlocBuilder<TransactionBloc,TransactionState>(
+                                      builder: (context, state) {
+                                        if (state is TransactionLoadingState) {
+                                          return const Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        }
+                                        if (state is TransactionErrorState) {
+                                          return Text(
+                                            state.message,
+                                            style: const TextStyle(
+                                              color: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                              
+                                        if (state is TransactionLoadedState) {
+                                          if (state.transactions.isEmpty) {
+                                            return Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                vertical: 16,
+                                              ),
+                                              child: Text(
+                                                'Nenhuma Transação encontrada',
+                                                textAlign: TextAlign.center,
+                                                style: subText,
+                                              ),
+                                            );
+                                          }
+                                          return Column(
+                                            children: state.transactions.map((
+                                              transaction,
+                                            ) {
+                                              return TransactionsRecently(
+                                                namePayment:
+                                                    transaction.description,
+                                                valuePayment: transaction.type == 'expense'
+                                                    ? '-R\$${transaction.value.toStringAsFixed(2)}'
+                                                    : '+R\$${transaction.value.toStringAsFixed(2)}',
+                                                detailPayment: transaction
+                                                    .createdAt
+                                                    .toString(),
+                                                icon:
+                                                    transaction.type == 'expense'
+                                                    ? Icons.shopping_cart
+                                                    : Icons.attach_money,
+                                              );
+                                            }).toList(),
+                                          );
+                                        }
+                                        return const SizedBox.shrink();
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 );
               }
               return const SizedBox.shrink();
@@ -429,6 +461,7 @@ class TransactionsRecently extends StatelessWidget {
               ],
             ),
           ),
+
 
           Text(
             valuePayment,
