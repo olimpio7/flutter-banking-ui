@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_banking_ui/ui/pages/manage_favorites_page.dart';
+import 'package:flutter_banking_ui/ui/pages/transaction_form_page.dart';
 import 'package:flutter_banking_ui/ui/widgets/text_button_action.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -117,6 +118,26 @@ class InitialPage extends StatelessWidget {
                               textAction: 'Enviar',
                               icon: Icons.north_east,
                               iconRight: true,
+                              onTap: () {
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(
+                                    builder: (_) => MultiBlocProvider(
+                                      providers: [
+                                        BlocProvider.value(
+                                          value: context.read<TransactionBloc>(),
+                                        ),
+                                        BlocProvider.value(
+                                          value: context.read<MyAccountBloc>(), 
+                                        )
+                                      ], 
+                                      child: const TransactionFormPage(
+                                        isDeposit: false
+                                      )
+                                    )
+                                  )
+                                );
+                              },
                             ),
                           ),
                           Padding(
@@ -126,6 +147,26 @@ class InitialPage extends StatelessWidget {
                             child: ActionButton(
                               textAction: 'Receber',
                               icon: Icons.south_west,
+                              onTap: () {
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(
+                                    builder: (_) => MultiBlocProvider(
+                                      providers: [
+                                        BlocProvider.value(
+                                          value: context.read<TransactionBloc>(),
+                                        ),
+                                        BlocProvider.value(
+                                          value: context.read<MyAccountBloc>(), 
+                                        )
+                                      ], 
+                                      child: const TransactionFormPage(
+                                        isDeposit: true
+                                      )
+                                    )
+                                  )
+                                );
+                              },
                             ),
                           ),
                         ],
@@ -257,8 +298,10 @@ class InitialPage extends StatelessWidget {
                                               ),
                                             );
                                           }
+                                          final recentTransactions = state.transactions.reversed.take(3).toList();
+
                                           return Column(
-                                            children: state.transactions.map((
+                                            children: recentTransactions.map((
                                               transaction,
                                             ) {
                                               return TransactionsRecently(
@@ -269,9 +312,7 @@ class InitialPage extends StatelessWidget {
                                                         'expense'
                                                     ? '-R\$${transaction.value.toStringAsFixed(2)}'
                                                     : '+R\$${transaction.value.toStringAsFixed(2)}',
-                                                detailPayment: transaction
-                                                    .createdAt
-                                                    .toString(),
+                                                detailPayment: transaction.createdAt.toString(),
                                                 icon:
                                                     transaction.type ==
                                                         'expense'
