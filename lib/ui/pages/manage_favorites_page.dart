@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_banking_ui/bloc/contact/contact_event.dart';
+import 'package:flutter_banking_ui/ui/widgets/confirmation_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/contact/contact_bloc.dart';
@@ -45,8 +46,18 @@ class ManageFavoritesPage extends StatelessWidget {
                   trailing: IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.red),
                     onPressed: () {
-                      context.read<ContactBloc>().add(
-                        DeleteContactEvent(contact: contact)
+                      showDialog(
+                        context: context, 
+                        builder: (_) => ConfirmationDialog(
+                          title: 'Excluir Favorito', 
+                          message: 'Deseja remover ${contact.name} dos favoritos?', 
+                          confirmText: 'Excluir',
+                          onConfirm: () {
+                            context.read<ContactBloc>().add(
+                              DeleteContactEvent(contact: contact),
+                            );
+                          } 
+                        )
                       );
                     },
                   ),
