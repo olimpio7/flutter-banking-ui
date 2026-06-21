@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_banking_ui/ui/pages/manage_favorites_page.dart';
+import 'package:flutter_banking_ui/ui/widgets/text_button_action.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/contact/contact_bloc.dart';
@@ -14,7 +16,7 @@ import '../widgets/add_favorite_button.dart';
 import '../widgets/favorites.dart';
 import '../widgets/soft_container.dart';
 import '../widgets/transaction_racently.dart';
-
+import 'transactions_history_page.dart';
 
 final TextStyle text = TextStyle(fontSize: 18);
 
@@ -105,7 +107,7 @@ class InitialPage extends StatelessWidget {
                         Text(parts[1], style: subText.copyWith(fontSize: 45)),
                       ],
                     ),
-                
+
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Row(
@@ -138,32 +140,23 @@ class InitialPage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('Favoritos', style: text),
-                                TextButton(
-                                  onPressed: () {},
-                                  style: ButtonStyle(
-                                    overlayColor: WidgetStateProperty.all(
-                                      Colors.transparent,
-                                    ),
-                                    padding: WidgetStateProperty.all(
-                                      EdgeInsets.zero,
-                                    ),
-                                    foregroundColor:
-                                        WidgetStateProperty.resolveWith((
-                                          states,
-                                        ) {
-                                          if (states.contains(
-                                            WidgetState.pressed,
-                                          )) {
-                                            return Colors.blue;
-                                          }
-                                          return const Color(0xFF9E9E9E);
-                                        }),
-                                  ),
-                                  child: Text('Gerenciar'),
-                                ),
+                                TextButtonAction(
+                                  text: 'Gerenciar', 
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context, 
+                                      MaterialPageRoute(
+                                        builder:(_) => BlocProvider.value(
+                                          value: context.read<ContactBloc>(),
+                                          child: const ManageFavoritesPage(),
+                                        ) 
+                                      )
+                                    );
+                                  }
+                                )
                               ],
                             ),
-                                      
+
                             BlocBuilder<ContactBloc, ContactState>(
                               builder: (context, state) {
                                 if (state is ContactLoadingState) {
@@ -171,11 +164,11 @@ class InitialPage extends StatelessWidget {
                                     child: CircularProgressIndicator(),
                                   );
                                 }
-                                      
+
                                 if (state is ContactErrorState) {
                                   return Text(state.message);
                                 }
-                                      
+
                                 if (state is ContactLoadedState) {
                                   return SizedBox(
                                     height: 85,
@@ -186,9 +179,9 @@ class InitialPage extends StatelessWidget {
                                         if (index == state.contacts.length) {
                                           return const AddFavoriteButton();
                                         }
-                                      
+
                                         final contact = state.contacts[index];
-                                      
+
                                         return Favorites(
                                           name: contact.name,
                                           imagePath: contact.avatar,
@@ -201,7 +194,7 @@ class InitialPage extends StatelessWidget {
                                 return const SizedBox.shrink();
                               },
                             ),
-                                      
+
                             Expanded(
                               child: SoftContainer(
                                 color: Colors.grey[100],
@@ -211,11 +204,30 @@ class InitialPage extends StatelessWidget {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text('Transações Recentes', style: text),
-                                        Text('Ver mais', style: subText),
+                                        Text(
+                                          'Transações Recentes',
+                                          style: text,
+                                        ),
+                                        TextButtonAction(
+                                          text: 'Ver Mais', 
+                                          onPressed: (){
+                                            Navigator.push(
+                                              context, 
+                                                MaterialPageRoute(
+                                                  builder:(_) => BlocProvider.value(
+                                                    value: context.read<TransactionBloc>(),
+                                                    child: const TransactionsHistoryPage(),
+                                                  ), 
+                                                )
+                                               );
+                                              }
+                                          )
                                       ],
                                     ),
-                                    BlocBuilder<TransactionBloc,TransactionState>(
+                                    BlocBuilder<
+                                      TransactionBloc,
+                                      TransactionState
+                                    >(
                                       builder: (context, state) {
                                         if (state is TransactionLoadingState) {
                                           return const Center(
@@ -230,13 +242,14 @@ class InitialPage extends StatelessWidget {
                                             ),
                                           );
                                         }
-                                              
+
                                         if (state is TransactionLoadedState) {
                                           if (state.transactions.isEmpty) {
                                             return Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                vertical: 16,
-                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 16,
+                                                  ),
                                               child: Text(
                                                 'Nenhuma Transação encontrada',
                                                 textAlign: TextAlign.center,
@@ -251,14 +264,17 @@ class InitialPage extends StatelessWidget {
                                               return TransactionsRecently(
                                                 namePayment:
                                                     transaction.description,
-                                                valuePayment: transaction.type == 'expense'
+                                                valuePayment:
+                                                    transaction.type ==
+                                                        'expense'
                                                     ? '-R\$${transaction.value.toStringAsFixed(2)}'
                                                     : '+R\$${transaction.value.toStringAsFixed(2)}',
                                                 detailPayment: transaction
                                                     .createdAt
                                                     .toString(),
                                                 icon:
-                                                    transaction.type == 'expense'
+                                                    transaction.type ==
+                                                        'expense'
                                                     ? Icons.shopping_cart
                                                     : Icons.attach_money,
                                               );
