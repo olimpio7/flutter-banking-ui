@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_banking_ui/ui/pages/initial_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/transactions/transaction_bloc.dart';
@@ -50,10 +51,10 @@ class TransactionsHistoryPage extends StatelessWidget {
                   namePayment: transaction.description,
                   valuePayment:
                       transaction.type == 'expense'
-                          ? '-R\$${transaction.value.toStringAsFixed(2)}'
-                          : '+R\$${transaction.value.toStringAsFixed(2)}',
+                          ? '-R\$${transaction.value.toStringAsFixed(0)}'
+                          : '+R\$${transaction.value.toStringAsFixed(0)}',
                   detailPayment:
-                      transaction.createdAt.toString(),
+                      formatDate(transaction.createdAt),
                   icon:
                       transaction.type == 'expense'
                           ? Icons.shopping_cart

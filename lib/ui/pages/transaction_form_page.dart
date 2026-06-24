@@ -1,4 +1,7 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:flutter_banking_ui/bloc/contact/contact_bloc.dart';
+import 'package:flutter_banking_ui/bloc/contact/contact_state.dart';
 import 'package:flutter_banking_ui/bloc/my_account/my_account_bloc.dart';
 import 'package:flutter_banking_ui/bloc/my_account/my_account_event.dart';
 import 'package:flutter_banking_ui/bloc/my_account/my_account_state.dart';
@@ -19,6 +22,7 @@ class TransactionFormPage extends StatefulWidget {
 class _TransactionFormPageState extends State<TransactionFormPage> {
   final _descriptionController = TextEditingController();
   final _valueController = TextEditingController();
+  int? _selectedContactId;
 
   @override
   void dispose() {
@@ -44,12 +48,23 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     return;
   }
 
+  if (!widget.isDeposit &&
+    value > accountState.account.balance) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Saldo insuficiente'),
+    ),
+  );
+  return;
+}
+
   final transaction = 
     TransactionsCompanion.insert(
       description: description,
       value: value,
       type: widget.isDeposit ? 'income' : 'expense',
       createdAt: DateTime.now(),
+      contactId: drift.Value(_selectedContactId),
     );
 
   context.read<TransactionBloc>().add(
@@ -71,6 +86,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       )
     )
   );
+  Navigator.pop(context);
 }
 
   @override
@@ -86,13 +102,41 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Descrição',
-                border: OutlineInputBorder(),
+            if(!widget.isDeposit)
+              BlocBuilder<ContactBloc,ContactState>(
+                builder: (context, state) {
+                  if(state is! ContactLoadedState || state.contacts.isEmpty) {
+                    return const SizedBox();
+                  }
+                  return DropdownButtonFormField<int>(
+                    initialValue: _selectedContactId,
+                    decoration: const InputDecoration(
+                      labelText: 'Favorito (Opcional)',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: state.contacts.map((contact) {
+                      return DropdownMenuItem<int>(
+                        value: contact.id,
+                        child: Text(contact.name)
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedContactId = value;
+                      });
+                    }
+                  );
+                }
               ),
-            ),
+              
+              const SizedBox(height: 16,),
+              TextField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Descrição',
+                  border: OutlineInputBorder(),
+                ),
+              ),
             const SizedBox(height: 16),
 
             TextField(

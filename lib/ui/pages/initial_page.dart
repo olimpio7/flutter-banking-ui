@@ -3,6 +3,7 @@ import 'package:flutter_banking_ui/ui/pages/manage_favorites_page.dart';
 import 'package:flutter_banking_ui/ui/pages/transaction_form_page.dart';
 import 'package:flutter_banking_ui/ui/widgets/text_button_action.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../bloc/contact/contact_bloc.dart';
 import '../../bloc/contact/contact_state.dart';
@@ -129,6 +130,9 @@ class InitialPage extends StatelessWidget {
                                         ),
                                         BlocProvider.value(
                                           value: context.read<MyAccountBloc>(), 
+                                        ),
+                                        BlocProvider.value(
+                                          value: context.read<ContactBloc>()
                                         )
                                       ], 
                                       child: const TransactionFormPage(
@@ -158,6 +162,9 @@ class InitialPage extends StatelessWidget {
                                         ),
                                         BlocProvider.value(
                                           value: context.read<MyAccountBloc>(), 
+                                        ),
+                                        BlocProvider.value(
+                                          value:  context.read<ContactBloc>()
                                         )
                                       ], 
                                       child: const TransactionFormPage(
@@ -312,7 +319,7 @@ class InitialPage extends StatelessWidget {
                                                         'expense'
                                                     ? '-R\$${transaction.value.toStringAsFixed(2)}'
                                                     : '+R\$${transaction.value.toStringAsFixed(2)}',
-                                                detailPayment: transaction.createdAt.toString(),
+                                                detailPayment: formatDate(transaction.createdAt),
                                                 icon:
                                                     transaction.type ==
                                                         'expense'
@@ -343,4 +350,8 @@ class InitialPage extends StatelessWidget {
       ),
     );
   }
+}
+
+String formatDate(DateTime date) {
+  return DateFormat('dd/MM • HH:mm').format(date);
 }

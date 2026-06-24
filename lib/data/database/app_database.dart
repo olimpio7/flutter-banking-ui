@@ -32,7 +32,7 @@ LazyDatabase _openConnection() {
     final file = File(
       p.join(
         dir.path,
-        'app_database_V2.sqlite',
+        'app_database_V3.sqlite',
       )
     );
     return NativeDatabase(file);
