@@ -10,3 +10,18 @@ class CreateTransactionEvent extends TransactionEvent {
   CreateTransactionEvent({required this.transaction});
 }
 
+class UpdateTransactionEvent extends TransactionEvent {
+  final Transaction transaction;
+
+  UpdateTransactionEvent({
+    required this.transaction,
+  });
+}
+
+class DeleteTransactionEvent extends TransactionEvent {
+  final Transaction transaction;
+
+  DeleteTransactionEvent({
+    required this.transaction,
+  });
+}

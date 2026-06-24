@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_banking_ui/ui/pages/manage_favorites_page.dart';
 import 'package:flutter_banking_ui/ui/pages/transaction_form_page.dart';
+import 'package:flutter_banking_ui/ui/widgets/settings_drawer.dart';
 import 'package:flutter_banking_ui/ui/widgets/text_button_action.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -34,6 +35,9 @@ class InitialPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
+
+      drawer: const SettingsDrawer(),
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -80,20 +84,29 @@ class InitialPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SoftContainer(
-                          padding: EdgeInsets.fromLTRB(1, 1, 12, 1),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 25,
-                                backgroundImage: AssetImage(
-                                  'assets/images/deel.jpg',
+                        Builder(
+                          builder: (context) {
+                            return GestureDetector(
+                              onTap: () {
+                                Scaffold.of(context).openDrawer();
+                              },
+                              child: SoftContainer(
+                                padding: EdgeInsets.fromLTRB(1, 1, 12, 1),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 25,
+                                      backgroundImage: AssetImage(
+                                        'assets/images/deel.jpg',
+                                      ),
+                                    ),
+                                    Padding(padding: EdgeInsets.only(right: 8.0)),
+                                    Text(state.account.name, style: text),
+                                  ],
                                 ),
                               ),
-                              Padding(padding: EdgeInsets.only(right: 8.0)),
-                              Text(state.account.name, style: text),
-                            ],
-                          ),
+                            );
+                          }
                         ),
                         SoftContainer(child: Icon(Icons.notifications_none)),
                       ],
@@ -121,25 +134,26 @@ class InitialPage extends StatelessWidget {
                               iconRight: true,
                               onTap: () {
                                 Navigator.push(
-                                  context, 
+                                  context,
                                   MaterialPageRoute(
                                     builder: (_) => MultiBlocProvider(
                                       providers: [
                                         BlocProvider.value(
-                                          value: context.read<TransactionBloc>(),
+                                          value: context
+                                              .read<TransactionBloc>(),
                                         ),
                                         BlocProvider.value(
-                                          value: context.read<MyAccountBloc>(), 
+                                          value: context.read<MyAccountBloc>(),
                                         ),
                                         BlocProvider.value(
-                                          value: context.read<ContactBloc>()
-                                        )
-                                      ], 
+                                          value: context.read<ContactBloc>(),
+                                        ),
+                                      ],
                                       child: const TransactionFormPage(
-                                        isDeposit: false
-                                      )
-                                    )
-                                  )
+                                        isDeposit: false,
+                                      ),
+                                    ),
+                                  ),
                                 );
                               },
                             ),
@@ -153,25 +167,26 @@ class InitialPage extends StatelessWidget {
                               icon: Icons.south_west,
                               onTap: () {
                                 Navigator.push(
-                                  context, 
+                                  context,
                                   MaterialPageRoute(
                                     builder: (_) => MultiBlocProvider(
                                       providers: [
                                         BlocProvider.value(
-                                          value: context.read<TransactionBloc>(),
+                                          value: context
+                                              .read<TransactionBloc>(),
                                         ),
                                         BlocProvider.value(
-                                          value: context.read<MyAccountBloc>(), 
+                                          value: context.read<MyAccountBloc>(),
                                         ),
                                         BlocProvider.value(
-                                          value:  context.read<ContactBloc>()
-                                        )
-                                      ], 
+                                          value: context.read<ContactBloc>(),
+                                        ),
+                                      ],
                                       child: const TransactionFormPage(
-                                        isDeposit: true
-                                      )
-                                    )
-                                  )
+                                        isDeposit: true,
+                                      ),
+                                    ),
+                                  ),
                                 );
                               },
                             ),
@@ -189,19 +204,19 @@ class InitialPage extends StatelessWidget {
                               children: [
                                 Text('Favoritos', style: text),
                                 TextButtonAction(
-                                  text: 'Gerenciar', 
+                                  text: 'Gerenciar',
                                   onPressed: () {
                                     Navigator.push(
-                                      context, 
+                                      context,
                                       MaterialPageRoute(
-                                        builder:(_) => BlocProvider.value(
+                                        builder: (_) => BlocProvider.value(
                                           value: context.read<ContactBloc>(),
                                           child: const ManageFavoritesPage(),
-                                        ) 
-                                      )
+                                        ),
+                                      ),
                                     );
-                                  }
-                                )
+                                  },
+                                ),
                               ],
                             ),
 
@@ -257,19 +272,21 @@ class InitialPage extends StatelessWidget {
                                           style: text,
                                         ),
                                         TextButtonAction(
-                                          text: 'Ver Mais', 
-                                          onPressed: (){
+                                          text: 'Ver Mais',
+                                          onPressed: () {
                                             Navigator.push(
-                                              context, 
-                                                MaterialPageRoute(
-                                                  builder:(_) => BlocProvider.value(
-                                                    value: context.read<TransactionBloc>(),
-                                                    child: const TransactionsHistoryPage(),
-                                                  ), 
-                                                )
-                                               );
-                                              }
-                                          )
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => BlocProvider.value(
+                                                  value: context
+                                                      .read<TransactionBloc>(),
+                                                  child:
+                                                      const TransactionsHistoryPage(),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ],
                                     ),
                                     BlocBuilder<
@@ -305,7 +322,11 @@ class InitialPage extends StatelessWidget {
                                               ),
                                             );
                                           }
-                                          final recentTransactions = state.transactions.reversed.take(3).toList();
+                                          final recentTransactions = state
+                                              .transactions
+                                              .reversed
+                                              .take(3)
+                                              .toList();
 
                                           return Column(
                                             children: recentTransactions.map((
@@ -319,7 +340,9 @@ class InitialPage extends StatelessWidget {
                                                         'expense'
                                                     ? '-R\$${transaction.value.toStringAsFixed(2)}'
                                                     : '+R\$${transaction.value.toStringAsFixed(2)}',
-                                                detailPayment: formatDate(transaction.createdAt),
+                                                detailPayment: formatDate(
+                                                  transaction.createdAt,
+                                                ),
                                                 icon:
                                                     transaction.type ==
                                                         'expense'

@@ -4,11 +4,11 @@ import '../../data/database/dao/transaction_dao.dart';
 import 'transaction_event.dart';
 import 'transaction_state.dart';
 
-class TransactionBloc extends Bloc<TransactionEvent, TransactionState>{
+class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionDao _dao;
 
   TransactionBloc(this._dao) : super(TransactionLoadingState()) {
-    on<LoadTransactionEvent>((event, emit) async{
+    on<LoadTransactionEvent>((event, emit) async {
       emit(TransactionLoadingState());
 
       try {
@@ -17,8 +17,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState>{
       } catch (e) {
         emit(TransactionErrorState('Erro ao carregar as transações : $e'));
       }
-    }
-    );
+    });
     on<CreateTransactionEvent>((event, emit) async {
       emit(TransactionLoadingState());
 
@@ -28,9 +27,28 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState>{
       } catch (e) {
         emit(TransactionErrorState('Erro ao criar transação: $e'));
       }
-    }
-    );
+    });
+    on<UpdateTransactionEvent>((event, emit) async {
+      emit(TransactionLoadingState());
+
+      try {
+        await _dao.updateTransaction(event.transaction);
+
+        add(LoadTransactionEvent());
+      } catch (e) {
+        emit(TransactionErrorState('Erro ao atualizar transação: $e'));
+      }
+    });
+    on<DeleteTransactionEvent>((event, emit) async {
+      emit(TransactionLoadingState());
+
+      try {
+        await _dao.deleteTransaction(event.transaction);
+
+        add(LoadTransactionEvent());
+      } catch (e) {
+        emit(TransactionErrorState('Erro ao excluir transação: $e'));
+      }
+    });
   }
 }
-
-
