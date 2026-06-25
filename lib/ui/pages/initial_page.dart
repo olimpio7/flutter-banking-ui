@@ -14,6 +14,7 @@ import '../../bloc/my_account/my_account_state.dart';
 import '../../bloc/transactions/transaction_bloc.dart';
 import '../../bloc/transactions/transaction_state.dart';
 import '../../data/database/app_database.dart';
+import '../../theme/app_theme.dart';
 import '../widgets/action_button.dart';
 import '../widgets/add_favorite_button.dart';
 import '../widgets/favorites.dart';
@@ -26,11 +27,6 @@ class InitialPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // CORREÇÃO DOS ERROS DE INCOMPATIBILIDADE:
-    // Puxa as definições globais do AppTheme para dentro destas variáveis locais.
-    // Assim, todos os widgets abaixo que usavam 'text' ou 'subText' continuam funcionando.
-    final TextStyle text = Theme.of(context).textTheme.titleLarge ?? const TextStyle(fontSize: 18);
-    final TextStyle subText = Theme.of(context).textTheme.bodyMedium ?? const TextStyle(fontSize: 15);
 
     return Scaffold(
       drawer: const SettingsDrawer(),
@@ -65,7 +61,7 @@ class InitialPage extends StatelessWidget {
 
               if (state is MyAccountErrorState) {
                 return Center(
-                  child: Text( // CORREÇÃO: 'value' alterado para 'child'
+                  child: Text(
                     state.message,
                     style: const TextStyle(color: Colors.red),
                   ),
@@ -117,7 +113,7 @@ class InitialPage extends StatelessWidget {
                           "R\$${parts[0]}.",
                           style: text.copyWith(fontSize: 45),
                         ),
-                        Text(parts[1], style: subText.copyWith(fontSize: 45)),
+                        Text(parts[1], style: subText.copyWith(fontSize: 40)),
                       ],
                     ),
 
@@ -244,6 +240,7 @@ class InitialPage extends StatelessWidget {
                                         return Favorites(
                                           name: contact.name,
                                           imagePath: contact.avatar,
+                                          onTap: (){},
                                           logoPayment: contact.paymentLogo,
                                         );
                                       },

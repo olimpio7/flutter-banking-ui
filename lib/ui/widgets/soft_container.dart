@@ -12,7 +12,7 @@ class SoftContainer extends StatelessWidget {
   const SoftContainer({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(12),
+    this.padding = const EdgeInsets.all(10),
     this.borderRadius = 30,
     this.color,
     this.boxShadow,
@@ -21,11 +21,9 @@ class SoftContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 6.0),
       padding: padding,
-      // Modifique a linha do decoration dentro do seu SoftContainer:
       decoration: BoxDecoration(
-        // Se você passar cor manual ele usa, se não, ele descobre se o app está claro ou escuro sozinho!
         color: color ?? AppColors.getContainerColor(context),
         borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: boxShadow,

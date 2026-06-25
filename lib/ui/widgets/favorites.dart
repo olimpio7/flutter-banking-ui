@@ -6,12 +6,14 @@ class Favorites extends StatelessWidget {
   final String name;
   final String? imagePath;
   final String? logoPayment;
+  final VoidCallback onTap;
 
   const Favorites({
     super.key,
     required this.name,
     this.imagePath,
-    this.logoPayment,
+    this.logoPayment, 
+    required this.onTap,
   });
 
   String getDisplayName(String name) {
@@ -34,46 +36,37 @@ class Favorites extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 70,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundImage: imagePath != null
-                      ? AssetImage(imagePath!)
-                      : null,
-                  child: imagePath == null ? Text(getInitials(name)) : null,
-                ),
-                Container(
-                  width: 18,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1.5),
-                    image: logoPayment != null
-                        ? DecorationImage(image: AssetImage(logoPayment!))
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: imagePath != null
+                        ? AssetImage(imagePath!)
                         : null,
+                    child: imagePath == null ? Text(getInitials(name)) : null,
                   ),
-                ),
-              ],
+                  
+                ],
+              ),
             ),
-          ),
-
-          Text(
-            getDisplayName(name),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: subText,
-          ),
-        ],
+        
+            Text(
+              getDisplayName(name),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: subText,
+            ),
+          ],
+        ),
       ),
     );
   }

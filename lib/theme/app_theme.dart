@@ -11,22 +11,22 @@ class ThemeCubit extends Cubit<ThemeMode> {
   }
 }
 
-// VARIÁVEIS GLOBAIS COM TAMANHOS REDUZIDOS (16 e 13)
+// VARIÁVEIS GLOBAIS BLINDADAS CONTRA COR ESCURA
 TextStyle get text {
   final isDark = ThemeCubit.instance.state == ThemeMode.dark;
   return TextStyle(
-    fontSize: 16, // Reduzido de 18 para 16
+    fontSize: 16,
     fontFamily: 'Roble',
-    color: isDark ? const Color(0xFFF5F5F7) : Colors.black87,
+    color: isDark ? const Color(0xFFFFFFFF) : Colors.black87, // Branco absoluto no escuro!
   );
 }
 
 TextStyle get subText {
   final isDark = ThemeCubit.instance.state == ThemeMode.dark;
   return TextStyle(
-    fontSize: 13, // Reduzido de 15 para 13
+    fontSize: 12,
     fontFamily: 'Roble',
-    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF757575), // Cinza bem mais nítido
+    color: isDark ? const Color(0xFFB0B3B8) : const Color(0xFF757575), // Cinza claro prateado e nítido
   );
 }
 
@@ -37,7 +37,6 @@ class AppTheme {
       fontFamily: 'Roble',
       scaffoldBackgroundColor: AppColors.bgLight,
       cardColor: AppColors.surfaceLight,
-      // Garante ícones escuros no modo claro
       iconTheme: const IconThemeData(color: Colors.black87),
     );
   }
@@ -49,16 +48,22 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.bgDark,
       cardColor: AppColors.surfaceDark,
       
-      // SOLUÇÃO PARA O BOTÃO ENVIAR/RECEBER: Força contraste total
+      // Força todos os ícones do app a ficarem brancos no modo escuro
       iconTheme: const IconThemeData(color: Colors.white),
-      primaryIconTheme: const IconThemeData(color: Colors.white),
       
-      // Ajusta o esquema de cores para os componentes saberem que o fundo é escuro
+      // Configuração global para garantir que o Flutter use as cores de texto corretas
       colorScheme: const ColorScheme.dark(
         primary: Colors.blue,
-        onPrimary: Colors.white, // Força texto branco sobre botões primários
+        onPrimary: Colors.white,
         surface: AppColors.containerDark,
-        onSurface: Colors.white, // Força ícones/textos brancos em superfícies
+        onSurface: Colors.white, // Garante que textos automáticos fiquem brancos
+      ),
+      
+      // Garante que os textos padrões do ThemeData também herdem o branco
+      textTheme: const TextTheme(
+        titleLarge: TextStyle(color: Colors.white),
+        bodyLarge: TextStyle(color: Colors.white),
+        bodyMedium: TextStyle(color: Color(0xFFB0B3B8)),
       ),
     );
   }

@@ -16,38 +16,7 @@ class TransactionsHistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Todas as Transações'),
-        actions: [
-          BlocBuilder<BankModeCubit, bool>(
-            builder: (context, isBankModeOn) {
-              return Row(
-                children: [
-                  Icon(
-                    isBankModeOn ? Icons.lock : Icons.lock_open,
-                    color: isBankModeOn ? Colors.green : Colors.orange,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    isBankModeOn ? 'Modo Banco: ON' : 'Modo Banco: OFF',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Switch(
-                    value: isBankModeOn,
-                    activeThumbColor: Colors.green,
-                    inactiveThumbColor: Colors.orange,
-                    inactiveTrackColor: Colors.orange.withAlpha(100),
-                    onChanged: (value) {
-                      context.read<BankModeCubit>().toggleMode();
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
+        title: const Text('Extrato'),
       ),
       body: BlocBuilder<TransactionBloc, TransactionState>(
         builder: (context, state) {
