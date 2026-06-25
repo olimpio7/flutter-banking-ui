@@ -21,23 +21,19 @@ import '../widgets/soft_container.dart';
 import '../widgets/transaction_racently.dart';
 import 'transactions_history_page.dart';
 
-final TextStyle text = TextStyle(fontSize: 18);
-
-final TextStyle subText = TextStyle(
-  fontSize: 15,
-  color: const Color(0xFF9E9E9E),
-);
-
 class InitialPage extends StatelessWidget {
   const InitialPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // CORREÇÃO DOS ERROS DE INCOMPATIBILIDADE:
+    // Puxa as definições globais do AppTheme para dentro destas variáveis locais.
+    // Assim, todos os widgets abaixo que usavam 'text' ou 'subText' continuam funcionando.
+    final TextStyle text = Theme.of(context).textTheme.titleLarge ?? const TextStyle(fontSize: 18);
+    final TextStyle subText = Theme.of(context).textTheme.bodyMedium ?? const TextStyle(fontSize: 15);
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-
       drawer: const SettingsDrawer(),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -46,36 +42,38 @@ class InitialPage extends StatelessWidget {
               if (state is MyAccountLoadingState) {
                 return const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(),
+                  child: Center(child: CircularProgressIndicator()),
                 );
               }
 
               if (state is MyAccountNotFoundState) {
-                return ElevatedButton(
-                  onPressed: () {
-                    final newAccount = MyAccountsCompanion.insert(
-                      name: 'Olimpio Carvalho',
-                      balance: 0.0,
-                    );
-                    context.read<MyAccountBloc>().add(
-                      CreateMyAccountEvent(newAccount),
-                    );
-                  },
-                  child: const Text('Criar Conta'),
+                return Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final newAccount = MyAccountsCompanion.insert(
+                        name: 'Olimpio Carvalho',
+                        balance: 0.0,
+                      );
+                      context.read<MyAccountBloc>().add(
+                        CreateMyAccountEvent(newAccount),
+                      );
+                    },
+                    child: const Text('Criar Conta'),
+                  ),
                 );
               }
 
               if (state is MyAccountErrorState) {
-                return Text(
-                  state.message,
-                  style: const TextStyle(color: Colors.red),
+                return Center(
+                  child: Text( // CORREÇÃO: 'value' alterado para 'child'
+                    state.message,
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 );
               }
 
               if (state is MyAccountLoadedState) {
-                final balanceFormatted = state.account.balance.toStringAsFixed(
-                  2,
-                );
+                final balanceFormatted = state.account.balance.toStringAsFixed(2);
                 final parts = balanceFormatted.split('.');
 
                 return Column(
@@ -91,24 +89,24 @@ class InitialPage extends StatelessWidget {
                                 Scaffold.of(context).openDrawer();
                               },
                               child: SoftContainer(
-                                padding: EdgeInsets.fromLTRB(1, 1, 12, 1),
+                                padding: const EdgeInsets.fromLTRB(1, 1, 12, 1),
                                 child: Row(
                                   children: [
-                                    CircleAvatar(
+                                    const CircleAvatar(
                                       radius: 25,
                                       backgroundImage: AssetImage(
                                         'assets/images/deel.jpg',
                                       ),
                                     ),
-                                    Padding(padding: EdgeInsets.only(right: 8.0)),
+                                    const Padding(padding: EdgeInsets.only(right: 8.0)),
                                     Text(state.account.name, style: text),
                                   ],
                                 ),
                               ),
                             );
-                          }
+                          },
                         ),
-                        SoftContainer(child: Icon(Icons.notifications_none)),
+                        const SoftContainer(child: Icon(Icons.notifications_none)),
                       ],
                     ),
                     const Padding(padding: EdgeInsets.only(top: 8.0)),
@@ -139,8 +137,7 @@ class InitialPage extends StatelessWidget {
                                     builder: (_) => MultiBlocProvider(
                                       providers: [
                                         BlocProvider.value(
-                                          value: context
-                                              .read<TransactionBloc>(),
+                                          value: context.read<TransactionBloc>(),
                                         ),
                                         BlocProvider.value(
                                           value: context.read<MyAccountBloc>(),
@@ -158,7 +155,7 @@ class InitialPage extends StatelessWidget {
                               },
                             ),
                           ),
-                          Padding(
+                          const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 4.0),
                           ),
                           Expanded(
@@ -172,8 +169,7 @@ class InitialPage extends StatelessWidget {
                                     builder: (_) => MultiBlocProvider(
                                       providers: [
                                         BlocProvider.value(
-                                          value: context
-                                              .read<TransactionBloc>(),
+                                          value: context.read<TransactionBloc>(),
                                         ),
                                         BlocProvider.value(
                                           value: context.read<MyAccountBloc>(),
@@ -260,7 +256,7 @@ class InitialPage extends StatelessWidget {
 
                             Expanded(
                               child: SoftContainer(
-                                color: Colors.grey[100],
+                                color: Theme.of(context).scaffoldBackgroundColor,
                                 child: Column(
                                   children: [
                                     Row(
@@ -278,10 +274,8 @@ class InitialPage extends StatelessWidget {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (_) => BlocProvider.value(
-                                                  value: context
-                                                      .read<TransactionBloc>(),
-                                                  child:
-                                                      const TransactionsHistoryPage(),
+                                                  value: context.read<TransactionBloc>(),
+                                                  child: const TransactionsHistoryPage(),
                                                 ),
                                               ),
                                             );
@@ -289,10 +283,7 @@ class InitialPage extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    BlocBuilder<
-                                      TransactionBloc,
-                                      TransactionState
-                                    >(
+                                    BlocBuilder<TransactionBloc, TransactionState>(
                                       builder: (context, state) {
                                         if (state is TransactionLoadingState) {
                                           return const Center(
@@ -311,9 +302,8 @@ class InitialPage extends StatelessWidget {
                                         if (state is TransactionLoadedState) {
                                           if (state.transactions.isEmpty) {
                                             return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 16,
+                                              padding: const EdgeInsets.symmetric(
+                                                    vertical: 12,
                                                   ),
                                               child: Text(
                                                 'Nenhuma Transação encontrada',
@@ -329,23 +319,16 @@ class InitialPage extends StatelessWidget {
                                               .toList();
 
                                           return Column(
-                                            children: recentTransactions.map((
-                                              transaction,
-                                            ) {
+                                            children: recentTransactions.map((transaction) {
                                               return TransactionsRecently(
-                                                namePayment:
-                                                    transaction.description,
-                                                valuePayment:
-                                                    transaction.type ==
-                                                        'expense'
+                                                namePayment: transaction.description,
+                                                valuePayment: transaction.type == 'expense'
                                                     ? '-R\$${transaction.value.toStringAsFixed(2)}'
                                                     : '+R\$${transaction.value.toStringAsFixed(2)}',
                                                 detailPayment: formatDate(
                                                   transaction.createdAt,
                                                 ),
-                                                icon:
-                                                    transaction.type ==
-                                                        'expense'
+                                                icon: transaction.type == 'expense'
                                                     ? Icons.shopping_cart
                                                     : Icons.attach_money,
                                               );

@@ -1,13 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/database/dao/contact_dao.dart';
+import '../../data/database/dao/transaction_dao.dart';
 import 'contact_event.dart';
 import 'contact_state.dart';
 
 class ContactBloc extends Bloc<ContactEvent, ContactState> {
   final ContactDao _dao;
+  final TransactionDao _transactionDao;
 
-  ContactBloc(this._dao) : super(ContactLoadingState()) {
+  ContactBloc(this._dao, this._transactionDao) : super(ContactLoadingState()) {
     on<LoadContactsEvent>((event, emit) async{
       emit(ContactLoadingState());
       
@@ -48,6 +50,14 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
       emit(ContactLoadingState());
       
       try {
+        final hasTransactions = await _transactionDao.hasTransactionsForContact(event.contact.id);
+        if (hasTransactions) {
+          emit(ContactErrorState('Não é possível excluir: Este contato possui transações no histórico.'));
+          await Future.delayed(const Duration(seconds: 3));
+          add(LoadContactsEvent());
+          return;
+        }
+
         await _dao.deleteContact(event.contact);
         add(LoadContactsEvent());
       } catch (e) {

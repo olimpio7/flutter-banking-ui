@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_colors.dart';
+
 class SoftContainer extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
@@ -21,8 +23,10 @@ class SoftContainer extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       padding: padding,
+      // Modifique a linha do decoration dentro do seu SoftContainer:
       decoration: BoxDecoration(
-        color: color ?? Colors.grey[200],
+        // Se você passar cor manual ele usa, se não, ele descobre se o app está claro ou escuro sozinho!
+        color: color ?? AppColors.getContainerColor(context),
         borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: boxShadow,
       ),

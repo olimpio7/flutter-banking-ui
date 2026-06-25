@@ -42,8 +42,19 @@ class $MyAccountsTable extends MyAccounts
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _imagePathMeta = const VerificationMeta(
+    'imagePath',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, name, balance];
+  late final GeneratedColumn<String> imagePath = GeneratedColumn<String>(
+    'image_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, balance, imagePath];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -75,6 +86,12 @@ class $MyAccountsTable extends MyAccounts
     } else if (isInserting) {
       context.missing(_balanceMeta);
     }
+    if (data.containsKey('image_path')) {
+      context.handle(
+        _imagePathMeta,
+        imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
+      );
+    }
     return context;
   }
 
@@ -96,6 +113,10 @@ class $MyAccountsTable extends MyAccounts
         DriftSqlType.double,
         data['${effectivePrefix}balance'],
       )!,
+      imagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_path'],
+      ),
     );
   }
 
@@ -109,10 +130,12 @@ class MyAccount extends DataClass implements Insertable<MyAccount> {
   final int id;
   final String name;
   final double balance;
+  final String? imagePath;
   const MyAccount({
     required this.id,
     required this.name,
     required this.balance,
+    this.imagePath,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -120,6 +143,9 @@ class MyAccount extends DataClass implements Insertable<MyAccount> {
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['balance'] = Variable<double>(balance);
+    if (!nullToAbsent || imagePath != null) {
+      map['image_path'] = Variable<String>(imagePath);
+    }
     return map;
   }
 
@@ -128,6 +154,9 @@ class MyAccount extends DataClass implements Insertable<MyAccount> {
       id: Value(id),
       name: Value(name),
       balance: Value(balance),
+      imagePath: imagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imagePath),
     );
   }
 
@@ -140,6 +169,7 @@ class MyAccount extends DataClass implements Insertable<MyAccount> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       balance: serializer.fromJson<double>(json['balance']),
+      imagePath: serializer.fromJson<String?>(json['imagePath']),
     );
   }
   @override
@@ -149,19 +179,27 @@ class MyAccount extends DataClass implements Insertable<MyAccount> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'balance': serializer.toJson<double>(balance),
+      'imagePath': serializer.toJson<String?>(imagePath),
     };
   }
 
-  MyAccount copyWith({int? id, String? name, double? balance}) => MyAccount(
+  MyAccount copyWith({
+    int? id,
+    String? name,
+    double? balance,
+    Value<String?> imagePath = const Value.absent(),
+  }) => MyAccount(
     id: id ?? this.id,
     name: name ?? this.name,
     balance: balance ?? this.balance,
+    imagePath: imagePath.present ? imagePath.value : this.imagePath,
   );
   MyAccount copyWithCompanion(MyAccountsCompanion data) {
     return MyAccount(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       balance: data.balance.present ? data.balance.value : this.balance,
+      imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
     );
   }
 
@@ -170,46 +208,53 @@ class MyAccount extends DataClass implements Insertable<MyAccount> {
     return (StringBuffer('MyAccount(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('balance: $balance')
+          ..write('balance: $balance, ')
+          ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, balance);
+  int get hashCode => Object.hash(id, name, balance, imagePath);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is MyAccount &&
           other.id == this.id &&
           other.name == this.name &&
-          other.balance == this.balance);
+          other.balance == this.balance &&
+          other.imagePath == this.imagePath);
 }
 
 class MyAccountsCompanion extends UpdateCompanion<MyAccount> {
   final Value<int> id;
   final Value<String> name;
   final Value<double> balance;
+  final Value<String?> imagePath;
   const MyAccountsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.balance = const Value.absent(),
+    this.imagePath = const Value.absent(),
   });
   MyAccountsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required double balance,
+    this.imagePath = const Value.absent(),
   }) : name = Value(name),
        balance = Value(balance);
   static Insertable<MyAccount> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<double>? balance,
+    Expression<String>? imagePath,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (balance != null) 'balance': balance,
+      if (imagePath != null) 'image_path': imagePath,
     });
   }
 
@@ -217,11 +262,13 @@ class MyAccountsCompanion extends UpdateCompanion<MyAccount> {
     Value<int>? id,
     Value<String>? name,
     Value<double>? balance,
+    Value<String?>? imagePath,
   }) {
     return MyAccountsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       balance: balance ?? this.balance,
+      imagePath: imagePath ?? this.imagePath,
     );
   }
 
@@ -237,6 +284,9 @@ class MyAccountsCompanion extends UpdateCompanion<MyAccount> {
     if (balance.present) {
       map['balance'] = Variable<double>(balance.value);
     }
+    if (imagePath.present) {
+      map['image_path'] = Variable<String>(imagePath.value);
+    }
     return map;
   }
 
@@ -245,7 +295,8 @@ class MyAccountsCompanion extends UpdateCompanion<MyAccount> {
     return (StringBuffer('MyAccountsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('balance: $balance')
+          ..write('balance: $balance, ')
+          ..write('imagePath: $imagePath')
           ..write(')'))
         .toString();
   }
@@ -980,12 +1031,14 @@ typedef $$MyAccountsTableCreateCompanionBuilder =
       Value<int> id,
       required String name,
       required double balance,
+      Value<String?> imagePath,
     });
 typedef $$MyAccountsTableUpdateCompanionBuilder =
     MyAccountsCompanion Function({
       Value<int> id,
       Value<String> name,
       Value<double> balance,
+      Value<String?> imagePath,
     });
 
 class $$MyAccountsTableFilterComposer
@@ -1009,6 +1062,11 @@ class $$MyAccountsTableFilterComposer
 
   ColumnFilters<double> get balance => $composableBuilder(
     column: $table.balance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1036,6 +1094,11 @@ class $$MyAccountsTableOrderingComposer
     column: $table.balance,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get imagePath => $composableBuilder(
+    column: $table.imagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$MyAccountsTableAnnotationComposer
@@ -1055,6 +1118,9 @@ class $$MyAccountsTableAnnotationComposer
 
   GeneratedColumn<double> get balance =>
       $composableBuilder(column: $table.balance, builder: (column) => column);
+
+  GeneratedColumn<String> get imagePath =>
+      $composableBuilder(column: $table.imagePath, builder: (column) => column);
 }
 
 class $$MyAccountsTableTableManager
@@ -1091,16 +1157,24 @@ class $$MyAccountsTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<double> balance = const Value.absent(),
-              }) => MyAccountsCompanion(id: id, name: name, balance: balance),
+                Value<String?> imagePath = const Value.absent(),
+              }) => MyAccountsCompanion(
+                id: id,
+                name: name,
+                balance: balance,
+                imagePath: imagePath,
+              ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
                 required double balance,
+                Value<String?> imagePath = const Value.absent(),
               }) => MyAccountsCompanion.insert(
                 id: id,
                 name: name,
                 balance: balance,
+                imagePath: imagePath,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

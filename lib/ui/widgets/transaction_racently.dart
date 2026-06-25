@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../pages/initial_page.dart';
+import '../../theme/app_theme.dart';
 
 class TransactionsRecently extends StatelessWidget {
   final String namePayment;
@@ -8,6 +8,8 @@ class TransactionsRecently extends StatelessWidget {
   final String detailPayment;
   final String? imagePath2;
   final IconData? icon;
+  final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
 
   const TransactionsRecently({
     super.key,
@@ -16,6 +18,8 @@ class TransactionsRecently extends StatelessWidget {
     required this.detailPayment,
     this.imagePath2,
     this.icon,
+    this.onDelete, 
+    this.onEdit,
   });
 
   @override
@@ -54,6 +58,18 @@ class TransactionsRecently extends StatelessWidget {
                   : Colors.green[800],
             ),
           ),
+          if (onEdit !=null) ...[
+            const SizedBox(width: 8,),
+            IconButton(
+              onPressed: onEdit, 
+              icon: const Icon(Icons.edit, color: Colors.blue),
+            ),
+          ],
+          if (onDelete != null)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              onPressed: onDelete,
+            ),
         ],
       ),
     );

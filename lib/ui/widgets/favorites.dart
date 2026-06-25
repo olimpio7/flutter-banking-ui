@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../pages/initial_page.dart';
+import '../../theme/app_theme.dart';
 
 class Favorites extends StatelessWidget {
   final String name;

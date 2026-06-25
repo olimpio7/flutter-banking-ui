@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_banking_ui/bloc/bank_mode/bank_mode_cubit.dart';
+import 'package:flutter_banking_ui/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/contact/contact_bloc.dart';
@@ -20,27 +22,38 @@ void main() {
 class MainApp extends StatelessWidget {
   final AppDatabase database;
 
-  const MainApp({super.key,required this.database});
+  const MainApp({super.key, required this.database});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'Roble'),
-      home: MultiBlocProvider(
+    return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (_) => MyAccountBloc(MyAccountDao(database))..add(LoadMyAccountEvent()),
-          ),
+        ),
         BlocProvider(
-          create: (_) => ContactBloc(ContactDao(database))..add(LoadContactsEvent()),
-          ),
+          create: (_) => ContactBloc(ContactDao(database), TransactionDao(database))..add(LoadContactsEvent()),
+        ),
         BlocProvider(
-          create: (_) => TransactionBloc(TransactionDao(database))..add(LoadTransactionEvent())
-          ),
+          create: (context) => TransactionBloc(TransactionDao(database),
+          context.read<MyAccountBloc>())..add(LoadTransactionEvent()),
+        ),
+        BlocProvider<BankModeCubit>(
+          create: (_) => BankModeCubit(), 
+        ),
       ],
-      child: const InitialPage(),
-    )
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        bloc: ThemeCubit.instance,
+        builder: (context, themeMode) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            themeMode: themeMode,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            home: const InitialPage(), // Agora a InitialPage fica limpa aqui
+          );
+        }
+      ),
     );
   }
 }

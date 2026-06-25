@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/contact/contact_bloc.dart';
 import '../pages/add_favorites_page.dart';
-import '../pages/initial_page.dart';
+import '../../theme/app_theme.dart';
 
 class AddFavoriteButton extends StatelessWidget {
   const AddFavoriteButton({super.key});
@@ -31,7 +31,11 @@ class AddFavoriteButton extends StatelessWidget {
                 ),
               );
             },
-            icon: const Icon(Icons.add),
+            icon: const Icon(
+              Icons.add,
+              size: 15,
+              color: Color(0xFF9E9E9E),
+            ),
           ),
         ),
         const SizedBox(height: 4),
