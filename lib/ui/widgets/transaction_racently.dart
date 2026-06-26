@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
+import '../../utils/image_helper.dart';
 
 class TransactionsRecently extends StatelessWidget {
   final String namePayment;
   final String valuePayment;
   final String detailPayment;
-  final String? imagePath2;
+  final String? avatar;
+  final String? contactName;
   final IconData? icon;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
@@ -16,7 +18,8 @@ class TransactionsRecently extends StatelessWidget {
     required this.namePayment,
     required this.valuePayment,
     required this.detailPayment,
-    this.imagePath2,
+    this.avatar,
+    this.contactName,
     this.icon,
     this.onDelete, 
     this.onEdit,
@@ -31,11 +34,13 @@ class TransactionsRecently extends StatelessWidget {
           CircleAvatar(
             radius: 25,
             backgroundColor: Colors.grey[200],
-            backgroundImage: imagePath2 != null
-                ? AssetImage(imagePath2!)
+            backgroundImage: avatar != null
+                ? ImageHelper.getImageProvider(avatar!)
                 : null,
-            child: (imagePath2 == null)
-                ? Icon(icon ?? Icons.attach_money, color: Colors.black54)
+            child: avatar == null 
+                ? (contactName != null 
+                    ? Text(contactName![0], style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 18))
+                    : Icon(icon ?? Icons.attach_money, color: Colors.black54))
                 : null,
           ),
           const SizedBox(width: 8),

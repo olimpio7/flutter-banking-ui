@@ -62,8 +62,12 @@ class InitialFavoritesSection extends StatelessWidget {
 
                     final contact = state.contacts[index];
 
-                    return GestureDetector(
-                      onTap: () {
+                    return TextButton(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(

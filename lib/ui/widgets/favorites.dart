@@ -35,9 +35,7 @@ class Favorites extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: Column(
           children: [
@@ -65,7 +63,6 @@ class Favorites extends StatelessWidget {
               style: subText,
             ),
           ],
-        ),
       ),
     );
   }

@@ -23,8 +23,6 @@ class ActionButton extends StatelessWidget {
       onTap: onTap,
       child: SoftContainer(
         padding: const EdgeInsets.all(16.0),
-        color: Colors.grey[100],
-        boxShadow: [BoxShadow(color: Colors.grey[300]!, spreadRadius: 0.5)],
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: iconRight

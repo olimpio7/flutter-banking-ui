@@ -54,13 +54,6 @@ class _ContactDialogState extends State<ContactDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            controller: _nameController,
-            decoration: const InputDecoration(labelText: 'Nome'),
-          ),
-          const SizedBox(height: 16),
-          const Text('Foto de Perfil', style: TextStyle(color: Colors.grey, fontSize: 12)),
-          const SizedBox(height: 8),
           Center(
             child: GestureDetector(
               onTap: _pickImage,
@@ -87,6 +80,14 @@ class _ContactDialogState extends State<ContactDialog> {
                   ),
                 ],
               ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: 'Nome',
+              border: OutlineInputBorder(),
             ),
           ),
         ],

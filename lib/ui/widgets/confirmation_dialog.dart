@@ -30,7 +30,7 @@ class ConfirmationDialog extends StatelessWidget {
         const SizedBox(width: 8),
         ElevatedButton(
           onPressed: () {
-            onConfirm(); // This was missing in the original code!
+            onConfirm();
             Navigator.pop(context);
           },
           child: Text(confirmText),

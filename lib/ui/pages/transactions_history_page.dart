@@ -3,6 +3,8 @@ import 'package:flutter_banking_ui/bloc/bank_mode/bank_mode_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../bloc/contact/contact_bloc.dart';
+import '../../bloc/contact/contact_state.dart';
 import '../../bloc/transactions/transaction_bloc.dart';
 import '../../bloc/transactions/transaction_event.dart';
 import '../../bloc/transactions/transaction_state.dart';
@@ -41,11 +43,22 @@ class TransactionsHistoryPage extends StatelessWidget {
                 return ListView.builder(
                   itemCount: state.transactions.length,
                   itemBuilder: (context, index) {
-                    final transaction = state.transactions.reversed
-                        .toList()[index];
+                    final transaction = state.transactions.reversed.toList()[index];
 
                     final showActions = !isBankModeOn;
                     final formattedValue = AppFormatters.formatCurrency(transaction.value);
+
+                    // Buscar informações do contato vinculado (se houver)
+                    String? avatar;
+                    String? contactName;
+                    final contactState = context.read<ContactBloc>().state;
+                    if (transaction.contactId != null && contactState is ContactLoadedState) {
+                      try {
+                        final c = contactState.contacts.firstWhere((c) => c.id == transaction.contactId);
+                        avatar = c.avatar;
+                        contactName = c.name;
+                      } catch (_) {}
+                    }
 
                     return TransactionsRecently(
                       namePayment: transaction.description,
@@ -54,8 +67,10 @@ class TransactionsHistoryPage extends StatelessWidget {
                           : '+$formattedValue',
                       detailPayment: formatDate(transaction.createdAt),
                       icon: transaction.type == 'expense'
-                          ? Icons.shopping_cart
-                          : Icons.attach_money,
+                          ? Icons.arrow_upward
+                          : Icons.arrow_downward,
+                      avatar: avatar,
+                      contactName: contactName,
 
                       onDelete: showActions
                           ? () {

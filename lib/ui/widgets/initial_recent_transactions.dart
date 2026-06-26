@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import '../../bloc/contact/contact_bloc.dart';
+import '../../bloc/contact/contact_state.dart';
 import '../../bloc/transactions/transaction_bloc.dart';
 import '../../bloc/transactions/transaction_state.dart';
 import '../../theme/app_theme.dart';
@@ -77,22 +79,39 @@ class InitialRecentTransactions extends StatelessWidget {
                 }
                 final recentTransactions = state.transactions.reversed.take(4).toList();
 
-                return Column(
-                  children: recentTransactions.map((transaction) {
-                    final formattedValue = AppFormatters.formatCurrency(transaction.value);
-                    return TransactionsRecently(
-                      namePayment: transaction.description,
-                      valuePayment: transaction.type == 'expense'
-                          ? '-$formattedValue'
-                          : '+$formattedValue',
-                      detailPayment: formatDate(
-                        transaction.createdAt,
-                      ),
-                      icon: transaction.type == 'expense'
-                          ? Icons.attach_money
-                          : Icons.attach_money,
+                return BlocBuilder<ContactBloc, ContactState>(
+                  builder: (context, contactState) {
+                    return Column(
+                      children: recentTransactions.map((transaction) {
+                        final formattedValue = AppFormatters.formatCurrency(transaction.value);
+                        
+                        String? avatar;
+                        String? contactName;
+                        if (transaction.contactId != null && contactState is ContactLoadedState) {
+                          try {
+                            final c = contactState.contacts.firstWhere((c) => c.id == transaction.contactId);
+                            avatar = c.avatar;
+                            contactName = c.name;
+                          } catch (_) {}
+                        }
+
+                        return TransactionsRecently(
+                          namePayment: transaction.description,
+                          valuePayment: transaction.type == 'expense'
+                              ? '-$formattedValue'
+                              : '+$formattedValue',
+                          detailPayment: formatDate(
+                            transaction.createdAt,
+                          ),
+                          icon: transaction.type == 'expense'
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward,
+                          avatar: avatar,
+                          contactName: contactName,
+                        );
+                      }).toList(),
                     );
-                  }).toList(),
+                  }
                 );
               }
               return const SizedBox.shrink();
