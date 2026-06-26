@@ -14,7 +14,7 @@ class ActionButton extends StatelessWidget {
     required this.textAction,
     required this.icon,
     this.iconRight = false,
-    this.onTap
+    this.onTap,
   });
 
   @override

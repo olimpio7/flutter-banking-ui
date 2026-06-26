@@ -11,13 +11,12 @@ class ThemeCubit extends Cubit<ThemeMode> {
   }
 }
 
-// VARIÁVEIS GLOBAIS BLINDADAS CONTRA COR ESCURA
 TextStyle get text {
   final isDark = ThemeCubit.instance.state == ThemeMode.dark;
   return TextStyle(
     fontSize: 16,
     fontFamily: 'Roble',
-    color: isDark ? const Color(0xFFFFFFFF) : Colors.black87, // Branco absoluto no escuro!
+    color: isDark ? const Color(0xFFFFFFFF) : Colors.black87, 
   );
 }
 
@@ -26,7 +25,7 @@ TextStyle get subText {
   return TextStyle(
     fontSize: 12,
     fontFamily: 'Roble',
-    color: isDark ? const Color(0xFFB0B3B8) : const Color(0xFF757575), // Cinza claro prateado e nítido
+    color: isDark ? const Color(0xFFB0B3B8) : const Color(0xFF757575), 
   );
 }
 
@@ -48,18 +47,18 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.bgDark,
       cardColor: AppColors.surfaceDark,
       
-      // Força todos os ícones do app a ficarem brancos no modo escuro
+      
       iconTheme: const IconThemeData(color: Colors.white),
       
-      // Configuração global para garantir que o Flutter use as cores de texto corretas
+      
       colorScheme: const ColorScheme.dark(
         primary: Colors.blue,
         onPrimary: Colors.white,
         surface: AppColors.containerDark,
-        onSurface: Colors.white, // Garante que textos automáticos fiquem brancos
+        onSurface: Colors.white, 
       ),
       
-      // Garante que os textos padrões do ThemeData também herdem o branco
+      
       textTheme: const TextTheme(
         titleLarge: TextStyle(color: Colors.white),
         bodyLarge: TextStyle(color: Colors.white),

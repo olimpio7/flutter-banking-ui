@@ -6,14 +6,12 @@ class Favorites extends StatelessWidget {
   final String name;
   final String? imagePath;
   final String? logoPayment;
-  final VoidCallback onTap;
 
   const Favorites({
     super.key,
     required this.name,
     this.imagePath,
     this.logoPayment, 
-    required this.onTap,
   });
 
   String getDisplayName(String name) {
@@ -37,7 +35,7 @@ class Favorites extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: Column(

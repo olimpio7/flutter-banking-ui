@@ -237,11 +237,22 @@ class InitialPage extends StatelessWidget {
 
                                         final contact = state.contacts[index];
 
-                                        return Favorites(
-                                          name: contact.name,
-                                          imagePath: contact.avatar,
-                                          onTap: (){},
-                                          logoPayment: contact.paymentLogo,
+                                        return GestureDetector(
+                                          
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => TransactionFormPage(
+                                                  isDeposit: false
+                                                ) 
+                                            )
+                                          );
+                                          },
+                                          child: Favorites(
+                                            name: contact.name,
+                                            imagePath: contact.avatar,
+                                          ),
                                         );
                                       },
                                     ),
@@ -312,7 +323,7 @@ class InitialPage extends StatelessWidget {
                                           final recentTransactions = state
                                               .transactions
                                               .reversed
-                                              .take(3)
+                                              .take(4)
                                               .toList();
 
                                           return Column(
@@ -326,7 +337,7 @@ class InitialPage extends StatelessWidget {
                                                   transaction.createdAt,
                                                 ),
                                                 icon: transaction.type == 'expense'
-                                                    ? Icons.shopping_cart
+                                                    ? Icons.attach_money
                                                     : Icons.attach_money,
                                               );
                                             }).toList(),

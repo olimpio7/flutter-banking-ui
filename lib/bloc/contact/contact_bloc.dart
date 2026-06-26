@@ -47,24 +47,41 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
     );
 
     on<DeleteContactEvent>((event, emit) async {
-      emit(ContactLoadingState());
-      
-      try {
-        final hasTransactions = await _transactionDao.hasTransactionsForContact(event.contact.id);
-        if (hasTransactions) {
-          emit(ContactErrorState('Não é possível excluir: Este contato possui transações no histórico.'));
-          await Future.delayed(const Duration(seconds: 3));
-          add(LoadContactsEvent());
-          return;
-        }
+  emit(ContactLoadingState());
 
-        await _dao.deleteContact(event.contact);
-        add(LoadContactsEvent());
-      } catch (e) {
-        emit(ContactErrorState('Erro ao excluir contato: $e'));
-      }
-    },
+  try {
+
+    final hasTransactions =
+        await _transactionDao
+            .hasTransactionsForContact(
+              event.contact.id,
+            );
+
+    if (hasTransactions) {
+
+      emit(
+        ContactErrorState(
+          'Não é possível excluir este favorito porque existem transações vinculadas.',
+        ),
+      );
+
+      add(LoadContactsEvent());
+
+      return;
+    }
+
+    await _dao.deleteContact(event.contact);
+
+    add(LoadContactsEvent());
+
+  } catch (e) {
+    emit(
+      ContactErrorState(
+        'Erro ao excluir contato: $e',
+      ),
     );
+  }
+});
   }
 
 }

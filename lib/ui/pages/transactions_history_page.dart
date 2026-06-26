@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_banking_ui/bloc/bank_mode/bank_mode_cubit.dart';
-import 'package:flutter_banking_ui/ui/pages/initial_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../bloc/transactions/transaction_bloc.dart';
 import '../../bloc/transactions/transaction_event.dart';
@@ -46,8 +46,8 @@ class TransactionsHistoryPage extends StatelessWidget {
                     return TransactionsRecently(
                       namePayment: transaction.description,
                       valuePayment: transaction.type == 'expense'
-                          ? '-R\$${transaction.value.toStringAsFixed(0)}'
-                          : '+R\$${transaction.value.toStringAsFixed(0)}',
+                          ? '-R\$${transaction.value.toStringAsFixed(2)}'
+                          : '+R\$${transaction.value.toStringAsFixed(2)}',
                       detailPayment: formatDate(transaction.createdAt),
                       icon: transaction.type == 'expense'
                           ? Icons.shopping_cart
@@ -186,4 +186,8 @@ class TransactionsHistoryPage extends StatelessWidget {
       },
     );
   }
+}
+
+String formatDate(DateTime date) {
+  return DateFormat('dd/MM • HH:mm').format(date);
 }

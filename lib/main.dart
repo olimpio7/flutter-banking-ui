@@ -50,7 +50,7 @@ class MainApp extends StatelessWidget {
             themeMode: themeMode,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            home: const InitialPage(), // Agora a InitialPage fica limpa aqui
+            home: const InitialPage(),
           );
         }
       ),
