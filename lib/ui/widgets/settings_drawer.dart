@@ -4,8 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/my_account/my_account_bloc.dart';
 import '../../bloc/my_account/my_account_state.dart';
+import '../../bloc/my_account/my_account_event.dart';
+import '../../bloc/contact/contact_bloc.dart';
+import '../../bloc/contact/contact_event.dart';
+import '../../bloc/transactions/transaction_bloc.dart';
+import '../../bloc/transactions/transaction_event.dart';
+import '../../data/database/app_database.dart';
 import '../../theme/app_theme.dart';
 import 'drawer_account_actions.dart';
+import 'confirmation_dialog.dart';
 
 class SettingsDrawer extends StatelessWidget {
   const SettingsDrawer({super.key});
@@ -68,61 +75,63 @@ class SettingsDrawer extends StatelessWidget {
                   },
                 ),
 
-                const Spacer(), // Empurra os botões de tema para o rodapé
+                // 3. TEMA (Minimalista)
+                BlocBuilder<ThemeCubit, ThemeMode>(
+                  bloc: ThemeCubit.instance,
+                  builder: (context, themeMode) {
+                    final isDark = themeMode == ThemeMode.dark;
+                    return ListTile(
+                      leading: Icon(
+                        isDark ? Icons.dark_mode : Icons.light_mode,
+                      ),
+                      title: Text(isDark ? 'Modo Escuro' : 'Modo Claro'),
+                      onTap: () {
+                        ThemeCubit.instance.toggleTheme(!isDark);
+                      },
+                    );
+                  },
+                ),
+
+                const Spacer(), // Empurra os últimos botões para o rodapé
 
                 const Divider(),
 
-                // 3. ÁREA DE SELEÇÃO DE TEMA INTEGRADA AO CUBIT
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  child: BlocBuilder<ThemeCubit, ThemeMode>(
-                    bloc: ThemeCubit.instance, // Escuta o Cubit global unificado
-                    builder: (context, themeMode) {
-                      final isDark = themeMode == ThemeMode.dark;
+                // 4. AÇÕES DE CONTA
+                ListTile(
+                  leading: const Icon(Icons.delete_forever, color: Colors.red),
+                  title: const Text('Excluir conta', style: TextStyle(color: Colors.red)),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) => ConfirmationDialog(
+                        title: 'Excluir Conta',
+                        message: 'Tem certeza? Todo o seu saldo, histórico de transações e contatos serão apagados permanentemente.',
+                        confirmText: 'Excluir Tudo',
+                        onConfirm: () async {
+                          Navigator.pop(dialogContext); // Fecha o dialog
+                          Navigator.pop(context); // Fecha a drawer
 
-                      return Container(
-                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                        decoration: BoxDecoration(
-                          // Se adapta visualmente ao tema ativo para destacar o card
-                          color: isDark ? Colors.grey[900] : Colors.grey[200],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(left: 8.0),
-                              child: Text(
-                                'Aparência',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                          final db = context.read<AppDatabase>();
+                          await db.clearAllData();
+
+                          if (context.mounted) {
+                            context.read<MyAccountBloc>().add(LoadMyAccountEvent());
+                            context.read<TransactionBloc>().add(LoadTransactionEvent());
+                            context.read<ContactBloc>().add(LoadContactsEvent());
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Conta excluída com sucesso.'),
+                                backgroundColor: Colors.redAccent,
                               ),
-                            ),
-                            Row(
-                              children: [
-                                // Botão de Modo Claro (Sol)
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.light_mode,
-                                    color: !isDark ? Colors.orange : Colors.grey,
-                                  ),
-                                  onPressed: () => ThemeCubit.instance.toggleTheme(false), // Ativa Light
-                                ),
-                                // Botão de Modo Escuro (Lua)
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.dark_mode,
-                                    color: isDark ? Colors.purpleAccent : Colors.grey,
-                                  ),
-                                  onPressed: () => ThemeCubit.instance.toggleTheme(true), // Ativa Dark
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                            );
+                          }
+                        },
+                      ),
+                    );
+                  },
                 ),
+                const SizedBox(height: 16),
               ],
             );
           },

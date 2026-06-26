@@ -27,6 +27,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       emit(TransactionLoadingState());
       try {
         await _dao.insertTransaction(event.transaction);
+
+        if (_accountBloc.state is MyAccountLoadedState) {
+          final account = (_accountBloc.state as MyAccountLoadedState).account;
+          final value = event.transaction.value.value;
+          final type = event.transaction.type.value;
+          
+          final newBalance = type == 'income'
+              ? account.balance + value
+              : account.balance - value;
+
+          _accountBloc.add(UpdateMyAccountEvent(account.copyWith(balance: newBalance)));
+        }
+
         add(LoadTransactionEvent());
       } catch (e) {
         emit(TransactionErrorState('Erro ao criar transação: $e'));

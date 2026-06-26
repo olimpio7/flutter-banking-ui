@@ -6,7 +6,9 @@ import '../../bloc/contact/contact_event.dart';
 import '../../data/database/app_database.dart';
 
 class AddFavoritePage extends StatefulWidget {
-  const AddFavoritePage({super.key});
+  final Contact? contactToEdit;
+
+  const AddFavoritePage({super.key, this.contactToEdit});
 
   @override
   State<AddFavoritePage> createState() => _AddFavoritePageState();
@@ -14,6 +16,14 @@ class AddFavoritePage extends StatefulWidget {
 
 class _AddFavoritePageState extends State<AddFavoritePage> {
   final _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.contactToEdit != null) {
+      _nameController.text = widget.contactToEdit!.name;
+    }
+  }
 
   @override
   void dispose() {
@@ -24,7 +34,9 @@ class _AddFavoritePageState extends State<AddFavoritePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Adicionar Favorito')),
+      appBar: AppBar(
+        title: Text(widget.contactToEdit == null ? 'Adicionar Favorito' : 'Editar Favorito'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -42,11 +54,19 @@ class _AddFavoritePageState extends State<AddFavoritePage> {
 
                 if (name.isEmpty) return;
 
-                context.read<ContactBloc>().add(
-                  CreateContactEvent(
-                    contact: ContactsCompanion.insert(name: name),
-                  ),
-                );
+                if (widget.contactToEdit == null) {
+                  context.read<ContactBloc>().add(
+                    CreateContactEvent(
+                      contact: ContactsCompanion.insert(name: name),
+                    ),
+                  );
+                } else {
+                  context.read<ContactBloc>().add(
+                    UpdateContactEvent(
+                      contact: widget.contactToEdit!.copyWith(name: name),
+                    ),
+                  );
+                }
 
                 Navigator.pop(context);
               },

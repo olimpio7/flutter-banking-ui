@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
+import '../../utils/image_helper.dart';
 
 class Favorites extends StatelessWidget {
   final String name;
@@ -47,7 +48,7 @@ class Favorites extends StatelessWidget {
                   CircleAvatar(
                     radius: 25,
                     backgroundImage: imagePath != null
-                        ? AssetImage(imagePath!)
+                        ? ImageHelper.getImageProvider(imagePath!)
                         : null,
                     child: imagePath == null ? Text(getInitials(name)) : null,
                   ),

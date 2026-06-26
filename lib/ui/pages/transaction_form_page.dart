@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_banking_ui/bloc/contact/contact_bloc.dart';
 import 'package:flutter_banking_ui/bloc/contact/contact_state.dart';
 import 'package:flutter_banking_ui/bloc/my_account/my_account_bloc.dart';
-import 'package:flutter_banking_ui/bloc/my_account/my_account_event.dart';
 import 'package:flutter_banking_ui/bloc/my_account/my_account_state.dart';
 import 'package:flutter_banking_ui/bloc/transactions/transaction_bloc.dart';
 import 'package:flutter_banking_ui/bloc/transactions/transaction_event.dart';
@@ -12,8 +11,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionFormPage extends StatefulWidget {
   final bool isDeposit;
+  final Contact? preSelectedContact;
 
-  const TransactionFormPage({super.key, required this.isDeposit});
+  const TransactionFormPage({super.key, required this.isDeposit, this.preSelectedContact});
 
   @override
   State<TransactionFormPage> createState() => _TransactionFormPageState();
@@ -24,6 +24,14 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   final _valueController = TextEditingController();
   int? _selectedContactId;
   
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.preSelectedContact != null) {
+      _selectedContactId = widget.preSelectedContact!.id;
+    }
+  }
 
   @override
   void dispose() {
@@ -74,19 +82,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     )
   );
 
-  final account = accountState.account;
-
-  final newBalance = widget.isDeposit
-      ? account.balance + value
-      : account.balance - value;
-      
-  context.read<MyAccountBloc>().add(
-    UpdateMyAccountEvent(
-      account.copyWith(
-        balance: newBalance
-      )
-    )
-  );
   Navigator.pop(context);
 }
 
@@ -104,6 +99,19 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         child: Column(
           children: [
             if(!widget.isDeposit)
+              if (widget.preSelectedContact != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: TextField(
+                    controller: TextEditingController(text: widget.preSelectedContact!.name),
+                    enabled: false,
+                    decoration: const InputDecoration(
+                      labelText: 'Enviando para',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                )
+              else
               BlocBuilder<ContactBloc,ContactState>(
                 builder: (context, state) {
                   if(state is! ContactLoadedState || state.contacts.isEmpty) {

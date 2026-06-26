@@ -26,8 +26,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
+    return RepositoryProvider<AppDatabase>.value(
+      value: database,
+      child: MultiBlocProvider(
+        providers: [
         BlocProvider(
           create: (_) => MyAccountBloc(MyAccountDao(database))..add(LoadMyAccountEvent()),
         ),
@@ -54,6 +56,7 @@ class MainApp extends StatelessWidget {
           );
         }
       ),
+      )
     );
   }
 }

@@ -7,6 +7,9 @@ import '../../bloc/transactions/transaction_bloc.dart';
 import '../../bloc/transactions/transaction_event.dart';
 import '../../bloc/transactions/transaction_state.dart';
 import '../../data/database/app_database.dart';
+import '../../utils/formatters.dart';
+import '../widgets/confirmation_dialog.dart';
+import '../widgets/soft_dialog.dart';
 import '../widgets/transaction_racently.dart';
 
 class TransactionsHistoryPage extends StatelessWidget {
@@ -42,12 +45,13 @@ class TransactionsHistoryPage extends StatelessWidget {
                         .toList()[index];
 
                     final showActions = !isBankModeOn;
+                    final formattedValue = AppFormatters.formatCurrency(transaction.value);
 
                     return TransactionsRecently(
                       namePayment: transaction.description,
                       valuePayment: transaction.type == 'expense'
-                          ? '-R\$${transaction.value.toStringAsFixed(2)}'
-                          : '+R\$${transaction.value.toStringAsFixed(2)}',
+                          ? '-$formattedValue'
+                          : '+$formattedValue',
                       detailPayment: formatDate(transaction.createdAt),
                       icon: transaction.type == 'expense'
                           ? Icons.shopping_cart
@@ -71,33 +75,15 @@ class TransactionsHistoryPage extends StatelessWidget {
 
                               showDialog(
                                 context: context,
-                                builder: (dialogContext) => AlertDialog(
-                                  title: const Text('Excluir Transação'),
-                                  content: const Text(
-                                    'Deseja remover esta transação do histórico?',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(dialogContext),
-                                      child: const Text('Cancelar'),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        foregroundColor: Colors.white,
-                                      ),
-                                      onPressed: () {
-                                        pageContext.read<TransactionBloc>().add(
-                                          DeleteTransactionEvent(
-                                            transaction: transaction,
-                                          ),
-                                        );
-                                        Navigator.pop(dialogContext);
-                                      },
-                                      child: const Text('Excluir'),
-                                    ),
-                                  ],
+                                builder: (dialogContext) => ConfirmationDialog(
+                                  title: 'Excluir Transação',
+                                  message: 'Deseja remover esta transação do histórico?',
+                                  confirmText: 'Excluir',
+                                  onConfirm: () {
+                                    pageContext.read<TransactionBloc>().add(
+                                      DeleteTransactionEvent(transaction: transaction),
+                                    );
+                                  },
                                 ),
                               );
                             }
@@ -105,17 +91,6 @@ class TransactionsHistoryPage extends StatelessWidget {
 
                       onEdit: showActions
                           ? () {
-                              if (transaction.contactId != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'não foi possivel editar: transações com favoritos são imutáveis.',
-                                    ),
-                                    backgroundColor: Colors.redAccent,
-                                  ),
-                                );
-                                return;
-                              }
                               _showEditDialog(context, transaction);
                             }
                           : null,
@@ -143,8 +118,8 @@ class TransactionsHistoryPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Editar Transação Local'),
+        return SoftDialog(
+          title: 'Editar Transação',
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -162,8 +137,9 @@ class TransactionsHistoryPage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancelar'),
+              child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
             ),
+            const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () {
                 final updatedTransaction = transaction.copyWith(

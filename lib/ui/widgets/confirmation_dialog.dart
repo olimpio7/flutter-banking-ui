@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_banking_ui/ui/widgets/soft_container.dart';
+import 'soft_dialog.dart';
 
 class ConfirmationDialog extends StatelessWidget {
   final String title;
@@ -19,52 +19,23 @@ class ConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: SoftContainer(
-        borderRadius: 20,
-        color: Colors.grey[100], 
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              title,
-              style:const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold
-              ),
-            ),
-            const Padding(padding: EdgeInsets.symmetric(vertical: 6)),
-
-            Text(
-              message,
-              textAlign: TextAlign.center,
-            ),
-
-             const Padding(padding: EdgeInsets.symmetric(vertical: 6)),
-
-             Row(
-              children: [
-                Expanded(
-                  child: TextButton(onPressed: () {
-                    Navigator.pop(context);
-                  }, 
-                  child: Text(cancelText), 
-                  ) 
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }, 
-                    child: Text(confirmText), 
-                  ) 
-                )
-              ],
-             )
-          ],
+    return SoftDialog(
+      title: title,
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(cancelText, style: const TextStyle(color: Colors.grey)),
         ),
-      ),
+        const SizedBox(width: 8),
+        ElevatedButton(
+          onPressed: () {
+            onConfirm(); // This was missing in the original code!
+            Navigator.pop(context);
+          },
+          child: Text(confirmText),
+        ),
+      ],
     );
   }
 }

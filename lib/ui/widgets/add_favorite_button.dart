@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/contact/contact_bloc.dart';
-import '../pages/add_favorites_page.dart';
+import '../widgets/edit_contact_dialog.dart';
 import '../../theme/app_theme.dart';
 
 class AddFavoriteButton extends StatelessWidget {
@@ -21,13 +21,11 @@ class AddFavoriteButton extends StatelessWidget {
 
           child: IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<ContactBloc>(),
-                    child: const AddFavoritePage(),
-                  ),
+              showDialog(
+                context: context,
+                builder: (_) => BlocProvider.value(
+                  value: context.read<ContactBloc>(),
+                  child: const ContactDialog(contact: null),
                 ),
               );
             },

@@ -1,33 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_banking_ui/ui/pages/manage_favorites_page.dart';
-import 'package:flutter_banking_ui/ui/pages/transaction_form_page.dart';
-import 'package:flutter_banking_ui/ui/widgets/settings_drawer.dart';
-import 'package:flutter_banking_ui/ui/widgets/text_button_action.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
-import '../../bloc/contact/contact_bloc.dart';
-import '../../bloc/contact/contact_state.dart';
 import '../../bloc/my_account/my_account_bloc.dart';
 import '../../bloc/my_account/my_account_event.dart';
 import '../../bloc/my_account/my_account_state.dart';
-import '../../bloc/transactions/transaction_bloc.dart';
-import '../../bloc/transactions/transaction_state.dart';
 import '../../data/database/app_database.dart';
-import '../../theme/app_theme.dart';
-import '../widgets/action_button.dart';
-import '../widgets/add_favorite_button.dart';
-import '../widgets/favorites.dart';
+import '../widgets/initial_balance_header.dart';
+import '../widgets/initial_favorites_section.dart';
+import '../widgets/initial_quick_actions.dart';
+import '../widgets/initial_recent_transactions.dart';
+import '../widgets/settings_drawer.dart';
 import '../widgets/soft_container.dart';
-import '../widgets/transaction_racently.dart';
-import 'transactions_history_page.dart';
 
 class InitialPage extends StatelessWidget {
   const InitialPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       drawer: const SettingsDrawer(),
       body: SafeArea(
@@ -69,286 +58,19 @@ class InitialPage extends StatelessWidget {
               }
 
               if (state is MyAccountLoadedState) {
-                final balanceFormatted = state.account.balance.toStringAsFixed(2);
-                final parts = balanceFormatted.split('.');
-
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Builder(
-                          builder: (context) {
-                            return GestureDetector(
-                              onTap: () {
-                                Scaffold.of(context).openDrawer();
-                              },
-                              child: SoftContainer(
-                                padding: const EdgeInsets.fromLTRB(1, 1, 12, 1),
-                                child: Row(
-                                  children: [
-                                    const CircleAvatar(
-                                      radius: 25,
-                                      backgroundImage: AssetImage(
-                                        'assets/images/deel.jpg',
-                                      ),
-                                    ),
-                                    const Padding(padding: EdgeInsets.only(right: 8.0)),
-                                    Text(state.account.name, style: text),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        const SoftContainer(child: Icon(Icons.notifications_none)),
-                      ],
-                    ),
-                    const Padding(padding: EdgeInsets.only(top: 8.0)),
-                    Text('Seu Saldo', style: subText),
-                    Row(
-                      children: [
-                        Text(
-                          "R\$${parts[0]}.",
-                          style: text.copyWith(fontSize: 45),
-                        ),
-                        Text(parts[1], style: subText.copyWith(fontSize: 40)),
-                      ],
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ActionButton(
-                              textAction: 'Enviar',
-                              icon: Icons.north_east,
-                              iconRight: true,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => MultiBlocProvider(
-                                      providers: [
-                                        BlocProvider.value(
-                                          value: context.read<TransactionBloc>(),
-                                        ),
-                                        BlocProvider.value(
-                                          value: context.read<MyAccountBloc>(),
-                                        ),
-                                        BlocProvider.value(
-                                          value: context.read<ContactBloc>(),
-                                        ),
-                                      ],
-                                      child: const TransactionFormPage(
-                                        isDeposit: false,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 4.0),
-                          ),
-                          Expanded(
-                            child: ActionButton(
-                              textAction: 'Receber',
-                              icon: Icons.south_west,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => MultiBlocProvider(
-                                      providers: [
-                                        BlocProvider.value(
-                                          value: context.read<TransactionBloc>(),
-                                        ),
-                                        BlocProvider.value(
-                                          value: context.read<MyAccountBloc>(),
-                                        ),
-                                        BlocProvider.value(
-                                          value: context.read<ContactBloc>(),
-                                        ),
-                                      ],
-                                      child: const TransactionFormPage(
-                                        isDeposit: true,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    InitialBalanceHeader(account: state.account),
+                    const InitialQuickActions(),
                     Expanded(
                       child: SoftContainer(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Favoritos', style: text),
-                                TextButtonAction(
-                                  text: 'Gerenciar',
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => BlocProvider.value(
-                                          value: context.read<ContactBloc>(),
-                                          child: const ManageFavoritesPage(),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-
-                            BlocBuilder<ContactBloc, ContactState>(
-                              builder: (context, state) {
-                                if (state is ContactLoadingState) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-
-                                if (state is ContactErrorState) {
-                                  return Text(state.message);
-                                }
-
-                                if (state is ContactLoadedState) {
-                                  return SizedBox(
-                                    height: 85,
-                                    child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: state.contacts.length + 1,
-                                      itemBuilder: (context, index) {
-                                        if (index == state.contacts.length) {
-                                          return const AddFavoriteButton();
-                                        }
-
-                                        final contact = state.contacts[index];
-
-                                        return GestureDetector(
-                                          
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) => TransactionFormPage(
-                                                  isDeposit: false
-                                                ) 
-                                            )
-                                          );
-                                          },
-                                          child: Favorites(
-                                            name: contact.name,
-                                            imagePath: contact.avatar,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              },
-                            ),
-
-                            Expanded(
-                              child: SoftContainer(
-                                color: Theme.of(context).scaffoldBackgroundColor,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Transações Recentes',
-                                          style: text,
-                                        ),
-                                        TextButtonAction(
-                                          text: 'Ver Mais',
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) => BlocProvider.value(
-                                                  value: context.read<TransactionBloc>(),
-                                                  child: const TransactionsHistoryPage(),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    BlocBuilder<TransactionBloc, TransactionState>(
-                                      builder: (context, state) {
-                                        if (state is TransactionLoadingState) {
-                                          return const Center(
-                                            child: CircularProgressIndicator(),
-                                          );
-                                        }
-                                        if (state is TransactionErrorState) {
-                                          return Text(
-                                            state.message,
-                                            style: const TextStyle(
-                                              color: Colors.red,
-                                            ),
-                                          );
-                                        }
-
-                                        if (state is TransactionLoadedState) {
-                                          if (state.transactions.isEmpty) {
-                                            return Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                    vertical: 12,
-                                                  ),
-                                              child: Text(
-                                                'Nenhuma Transação encontrada',
-                                                textAlign: TextAlign.center,
-                                                style: subText,
-                                              ),
-                                            );
-                                          }
-                                          final recentTransactions = state
-                                              .transactions
-                                              .reversed
-                                              .take(4)
-                                              .toList();
-
-                                          return Column(
-                                            children: recentTransactions.map((transaction) {
-                                              return TransactionsRecently(
-                                                namePayment: transaction.description,
-                                                valuePayment: transaction.type == 'expense'
-                                                    ? '-R\$${transaction.value.toStringAsFixed(2)}'
-                                                    : '+R\$${transaction.value.toStringAsFixed(2)}',
-                                                detailPayment: formatDate(
-                                                  transaction.createdAt,
-                                                ),
-                                                icon: transaction.type == 'expense'
-                                                    ? Icons.attach_money
-                                                    : Icons.attach_money,
-                                              );
-                                            }).toList(),
-                                          );
-                                        }
-                                        return const SizedBox.shrink();
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            const InitialFavoritesSection(),
+                            const Expanded(
+                              child: InitialRecentTransactions(),
                             ),
                           ],
                         ),
@@ -364,8 +86,4 @@ class InitialPage extends StatelessWidget {
       ),
     );
   }
-}
-
-String formatDate(DateTime date) {
-  return DateFormat('dd/MM • HH:mm').format(date);
 }
