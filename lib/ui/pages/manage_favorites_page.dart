@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/contact/contact_bloc.dart';
 import '../../bloc/contact/contact_state.dart';
 import '../widgets/soft_container.dart';
-import '../../utils/image_helper.dart';
+import '../widgets/user_avatar.dart';
 
 class ManageFavoritesPage extends StatelessWidget {
   const ManageFavoritesPage({super.key});
@@ -74,13 +74,10 @@ class ManageFavoritesPage extends StatelessWidget {
                   final contact = state.contacts[index];
 
                 return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: contact.avatar != null
-                        ? ImageHelper.getImageProvider(contact.avatar!)
-                        : null,
-                    child: contact.avatar == null
-                        ? Text(contact.name[0])
-                        : null,
+                  leading: UserAvatar(
+                    name: contact.name,
+                    imagePath: contact.avatar,
+                    radius: 20,
                   ),
                   title: Text(contact.name),
                   trailing: Row(

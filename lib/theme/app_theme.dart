@@ -14,14 +14,12 @@ class ThemeCubit extends Cubit<ThemeMode> {
 TextStyle get text {
   return const TextStyle(
     fontSize: 16,
-    fontFamily: 'Roble',
   );
 }
 
 TextStyle get subText {
   return const TextStyle(
     fontSize: 12,
-    fontFamily: 'Roble',
     color: Colors.grey, 
   );
 }
@@ -53,9 +51,9 @@ class AppTheme {
       ),
       
       textTheme: ThemeData.dark().textTheme.copyWith(
-        titleLarge: const TextStyle(color: Colors.white, fontFamily: 'Roble'),
-        bodyLarge: const TextStyle(color: Colors.white, fontFamily: 'Roble'),
-        bodyMedium: const TextStyle(color: Color(0xFFB0B3B8), fontFamily: 'Roble'),
+        titleLarge: const TextStyle(color: Colors.white,),
+        bodyLarge: const TextStyle(color: Colors.white,),
+        bodyMedium: const TextStyle(color: Color(0xFFB0B3B8)),
       ).apply(fontFamily: 'Roble'),
     );
   }

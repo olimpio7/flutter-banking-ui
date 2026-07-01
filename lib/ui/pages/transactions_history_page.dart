@@ -41,6 +41,7 @@ class TransactionsHistoryPage extends StatelessWidget {
             return BlocBuilder<BankModeCubit, bool>(
               builder: (context, isBankModeOn) {
                 return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   itemCount: state.transactions.length,
                   itemBuilder: (context, index) {
                     final transaction = state.transactions.reversed.toList()[index];
@@ -48,7 +49,6 @@ class TransactionsHistoryPage extends StatelessWidget {
                     final showActions = !isBankModeOn;
                     final formattedValue = AppFormatters.formatCurrency(transaction.value);
 
-                    // Buscar informações do contato vinculado (se houver)
                     String? avatar;
                     String? contactName;
                     final contactState = context.read<ContactBloc>().state;
@@ -76,23 +76,11 @@ class TransactionsHistoryPage extends StatelessWidget {
                           ? () {
                               final pageContext = context;
 
-                              if (transaction.contactId != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Não foi possível excluir: existe um contato vinculado a esta transação',
-                                    ),
-                                    backgroundColor: Colors.redAccent,
-                                  ),
-                                );
-                                return;
-                              }
-
                               showDialog(
                                 context: context,
                                 builder: (dialogContext) => ConfirmationDialog(
                                   title: 'Excluir Transação',
-                                  message: 'Deseja remover esta transação do histórico?',
+                                  message: 'Deseja excluir esta transação?',
                                   confirmText: 'Excluir',
                                   onConfirm: () {
                                     pageContext.read<TransactionBloc>().add(

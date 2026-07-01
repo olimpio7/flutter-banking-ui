@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
-import '../../utils/image_helper.dart';
+import 'user_avatar.dart';
 
 class TransactionsRecently extends StatelessWidget {
   final String namePayment;
@@ -31,17 +31,10 @@ class TransactionsRecently extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundColor: Colors.grey[200],
-            backgroundImage: avatar != null
-                ? ImageHelper.getImageProvider(avatar!)
-                : null,
-            child: avatar == null 
-                ? (contactName != null 
-                    ? Text(contactName![0], style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 18))
-                    : Icon(icon ?? Icons.attach_money, color: Colors.black54))
-                : null,
+          UserAvatar(
+            name: contactName ?? namePayment,
+            imagePath: avatar,
+            radius: 20,
           ),
           const SizedBox(width: 8),
           Expanded(

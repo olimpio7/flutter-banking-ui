@@ -11,7 +11,9 @@ import '../../bloc/transactions/transaction_bloc.dart';
 import '../../bloc/transactions/transaction_event.dart';
 import '../../data/database/app_database.dart';
 import '../../theme/app_theme.dart';
+import '../pages/initial_page.dart';
 import 'drawer_account_actions.dart';
+import 'user_avatar.dart';
 import 'confirmation_dialog.dart';
 
 class SettingsDrawer extends StatelessWidget {
@@ -34,9 +36,10 @@ class SettingsDrawer extends StatelessWidget {
               children: [
                 const SizedBox(height: 20),
 
-                const CircleAvatar(
+                UserAvatar(
+                  name: account.name,
+                  imagePath: account.imagePath,
                   radius: 40,
-                  backgroundImage: AssetImage('assets/images/deel.jpg'),
                 ),
 
                 const SizedBox(height: 12),
@@ -51,17 +54,15 @@ class SettingsDrawer extends StatelessWidget {
 
                 const Divider(),
 
-                // 1. EDITAR PERFIL
                 ListTile(
                   leading: const Icon(Icons.person_outline),
                   title: const Text('Editar Perfil'),
                   onTap: () {
-                    Navigator.pop(context); // Fecha a drawer
+                    Navigator.pop(context);
                     DrawerAccountActions.showEditProfileDialog(context);
                   },
                 ),
 
-                // 2. MODO BANCÁRIO
                 BlocBuilder<BankModeCubit, bool>(
                   builder: (context, isBankModeOn) {
                     return SwitchListTile(
@@ -75,7 +76,6 @@ class SettingsDrawer extends StatelessWidget {
                   },
                 ),
 
-                // 3. TEMA (Minimalista)
                 BlocBuilder<ThemeCubit, ThemeMode>(
                   bloc: ThemeCubit.instance,
                   builder: (context, themeMode) {
@@ -92,11 +92,10 @@ class SettingsDrawer extends StatelessWidget {
                   },
                 ),
 
-                const Spacer(), // Empurra os últimos botões para o rodapé
+                const Spacer(),
 
                 const Divider(),
 
-                // 4. AÇÕES DE CONTA
                 ListTile(
                   leading: const Icon(Icons.delete_forever, color: Colors.red),
                   title: const Text('Excluir conta', style: TextStyle(color: Colors.red)),
@@ -105,25 +104,26 @@ class SettingsDrawer extends StatelessWidget {
                       context: context,
                       builder: (dialogContext) => ConfirmationDialog(
                         title: 'Excluir Conta',
-                        message: 'Tem certeza? Todo o seu saldo, histórico de transações e contatos serão apagados permanentemente.',
+                        message: 'Tem certeza? Todo o serão apagados permanentemente.',
                         confirmText: 'Excluir Tudo',
                         onConfirm: () async {
-                          Navigator.pop(dialogContext); // Fecha o dialog
-                          Navigator.pop(context); // Fecha a drawer
-
+                          final myAccountBloc = context.read<MyAccountBloc>();
+                          final transactionBloc = context.read<TransactionBloc>();
+                          final contactBloc = context.read<ContactBloc>();
                           final db = context.read<AppDatabase>();
+
+                          Navigator.pop(dialogContext);
+
                           await db.clearAllData();
 
-                          if (context.mounted) {
-                            context.read<MyAccountBloc>().add(LoadMyAccountEvent());
-                            context.read<TransactionBloc>().add(LoadTransactionEvent());
-                            context.read<ContactBloc>().add(LoadContactsEvent());
+                          myAccountBloc.add(LoadMyAccountEvent());
+                          transactionBloc.add(LoadTransactionEvent());
+                          contactBloc.add(LoadContactsEvent());
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Conta excluída com sucesso.'),
-                                backgroundColor: Colors.redAccent,
-                              ),
+                          if (context.mounted) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (_) => const InitialPage()),
+                              (route) => false,
                             );
                           }
                         },

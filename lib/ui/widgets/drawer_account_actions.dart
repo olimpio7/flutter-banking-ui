@@ -1,4 +1,4 @@
-import 'dart:io';
+
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../bloc/my_account/my_account_bloc.dart';
 import '../../bloc/my_account/my_account_event.dart';
 import '../../bloc/my_account/my_account_state.dart';
+import 'user_avatar.dart';
 
 class DrawerAccountActions {
   static void showEditProfileDialog(BuildContext context) {
@@ -15,8 +16,7 @@ class DrawerAccountActions {
 
     final nameController = TextEditingController(text: account.name);
     final picker = ImagePicker();
-    
-    // Pegamos o caminho da imagem que já está salva na conta!
+
     String? selectedPath = account.imagePath;
 
     showDialog(
@@ -24,33 +24,15 @@ class DrawerAccountActions {
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            
-            // LÓGICA DE PREVISUALIZAÇÃO COMPLETA:
-            // Se o usuário já tem uma foto selecionada (seja arquivo ou o seu asset padrão)
-            ImageProvider avatarImage;
-            
-            if (selectedPath != null && selectedPath!.isNotEmpty) {
-              final file = File(selectedPath!);
-              if (file.existsSync()) {
-                avatarImage = FileImage(file);
-              } else {
-                // Caso seja o texto do seu asset padrão ('assets/images/deel.jpg')
-                avatarImage = AssetImage(selectedPath!);
-              }
-            } else {
-              // Fallback de segurança se estiver totalmente vazio
-              avatarImage = const AssetImage('assets/images/deel.jpg');
-            }
-
             return AlertDialog(
               title: const Text('Editar Perfil'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Agora exibe a foto real que já está sendo usada no app!
-                  CircleAvatar(
+                  UserAvatar(
+                    name: nameController.text.isEmpty ? account.name : nameController.text,
+                    imagePath: selectedPath,
                     radius: 45,
-                    backgroundImage: avatarImage,
                   ),
                   
                   TextButton.icon(
@@ -58,7 +40,7 @@ class DrawerAccountActions {
                       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
                       if (image != null) {
                         setDialogState(() {
-                          selectedPath = image.path; // Atualiza a pré-visualização na hora
+                          selectedPath = image.path;
                         });
                       }
                     },

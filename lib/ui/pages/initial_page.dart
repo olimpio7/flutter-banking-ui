@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/my_account/my_account_bloc.dart';
-import '../../bloc/my_account/my_account_event.dart';
 import '../../bloc/my_account/my_account_state.dart';
-import '../../data/database/app_database.dart';
 import '../widgets/initial_balance_header.dart';
 import '../widgets/initial_favorites_section.dart';
 import '../widgets/initial_quick_actions.dart';
 import '../widgets/initial_recent_transactions.dart';
 import '../widgets/settings_drawer.dart';
 import '../widgets/soft_container.dart';
+import 'welcome_page.dart';
 
 class InitialPage extends StatelessWidget {
   const InitialPage({super.key});
@@ -32,20 +31,7 @@ class InitialPage extends StatelessWidget {
               }
 
               if (state is MyAccountNotFoundState) {
-                return Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final newAccount = MyAccountsCompanion.insert(
-                        name: 'Olimpio Carvalho',
-                        balance: 0.0,
-                      );
-                      context.read<MyAccountBloc>().add(
-                        CreateMyAccountEvent(newAccount),
-                      );
-                    },
-                    child: const Text('Criar Conta'),
-                  ),
-                );
+                return const WelcomePage();
               }
 
               if (state is MyAccountErrorState) {

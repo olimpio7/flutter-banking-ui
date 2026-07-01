@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
-import '../../utils/image_helper.dart';
+import 'user_avatar.dart';
 
 class Favorites extends StatelessWidget {
   final String name;
@@ -24,15 +24,6 @@ class Favorites extends StatelessWidget {
     return firstName;
   }
 
-  String getInitials(String name) {
-    final parts = name.trim().split(' ');
-
-    if (parts.length == 1) {
-      return parts.first[0].toUpperCase();
-    }
-    return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -43,13 +34,11 @@ class Favorites extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundImage: imagePath != null
-                        ? ImageHelper.getImageProvider(imagePath!)
-                        : null,
-                    child: imagePath == null ? Text(getInitials(name)) : null,
-                  ),
+                UserAvatar(
+                  name: name,
+                  imagePath: imagePath,
+                  radius: 25,
+                ),
                   
                 ],
               ),

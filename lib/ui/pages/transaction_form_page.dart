@@ -99,9 +99,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       return [
         if (name != null) 'Pix de $name',
         'Salário',
-        'Reembolso',
         'Venda',
-        'Cashback',
         'Depósito',
       ];
     } else {
@@ -110,8 +108,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         'Mercado',
         'Aluguel',
         'Boleto',
-        'Comida',
-        'Transporte',
       ];
     }
   }
@@ -140,12 +136,11 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     widget.isDeposit ? 'Receber' : 'Enviar',
                     style: text.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(width: 44), // To balance the back button width
+                  const SizedBox(width: 44),
                 ],
               ),
               const SizedBox(height: 32),
 
-              // Favorites Selector
               if (_selectedContact != null)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -169,13 +164,13 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(_selectedContact!.name, style: text.copyWith(fontWeight: FontWeight.bold)),
-                              Text(widget.isDeposit ? 'Recebendo de' : 'Enviando para', style: subText.copyWith(fontSize: 12)),
+                              Text(widget.isDeposit ? 'Receber de' : 'Enviando para', style: subText.copyWith(fontSize: 12)),
                             ],
                           ),
                         ],
                       ),
                     ),
-                    if (widget.preSelectedContact == null) // Can only close if not forced
+                    if (widget.preSelectedContact == null)
                       GestureDetector(
                         onTap: () => setState(() => _selectedContact = null),
                         child: const SoftContainer(
@@ -190,7 +185,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                   builder: (context, state) {
                     if (state is ContactLoadedState) {
                       if (state.contacts.isEmpty) {
-                         return const SizedBox(); // No contacts
+                         return const SizedBox();
                       }
                       return SizedBox(
                         height: 95,
@@ -216,7 +211,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
               const Spacer(),
 
-              // Huge Value Input
               TextField(
                 controller: _valueController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -230,7 +224,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
               const Spacer(),
 
-              // Quick Tags (Chips)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -257,7 +250,6 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               ),
               const SizedBox(height: 12),
 
-              // Description Input
               TextField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(
@@ -267,8 +259,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               ),
 
               const SizedBox(height: 24),
-
-              // Save Button
+              
               SizedBox(
                 width: double.infinity,
                 height: 56,

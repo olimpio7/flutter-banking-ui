@@ -3,6 +3,7 @@ import '../../data/database/app_database.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/formatters.dart';
 import 'soft_container.dart';
+import 'user_avatar.dart';
 
 class InitialBalanceHeader extends StatelessWidget {
   final MyAccount account;
@@ -30,9 +31,10 @@ class InitialBalanceHeader extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(1, 1, 12, 1),
                     child: Row(
                       children: [
-                        const CircleAvatar(
+                        UserAvatar(
+                          name: account.name,
+                          imagePath: account.imagePath,
                           radius: 25,
-                          backgroundImage: AssetImage('assets/images/deel.jpg'),
                         ),
                         const Padding(padding: EdgeInsets.only(right: 8.0)),
                         Text(account.name, style: text),
