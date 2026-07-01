@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_banking_ui/bloc/bank_mode/bank_mode_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -8,7 +7,7 @@ import '../../bloc/contact/contact_state.dart';
 import '../../bloc/transactions/transaction_bloc.dart';
 import '../../bloc/transactions/transaction_event.dart';
 import '../../bloc/transactions/transaction_state.dart';
-import '../../data/database/app_database.dart';
+import '../../database/app_database.dart';
 import '../../utils/formatters.dart';
 import '../widgets/confirmation_dialog.dart';
 import '../widgets/soft_dialog.dart';
@@ -22,6 +21,7 @@ class TransactionsHistoryPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Extrato'),
+        backgroundColor: Color(0xFFF5F5F7),
       ),
       body: BlocBuilder<TransactionBloc, TransactionState>(
         builder: (context, state) {
@@ -38,15 +38,12 @@ class TransactionsHistoryPage extends StatelessWidget {
               return const Center(child: Text('Nenhuma transação encontrada'));
             }
 
-            return BlocBuilder<BankModeCubit, bool>(
-              builder: (context, isBankModeOn) {
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   itemCount: state.transactions.length,
                   itemBuilder: (context, index) {
                     final transaction = state.transactions.reversed.toList()[index];
 
-                    final showActions = !isBankModeOn;
                     final formattedValue = AppFormatters.formatCurrency(transaction.value);
 
                     String? avatar;
@@ -72,8 +69,7 @@ class TransactionsHistoryPage extends StatelessWidget {
                       avatar: avatar,
                       contactName: contactName,
 
-                      onDelete: showActions
-                          ? () {
+                      onDelete: () {
                               final pageContext = context;
 
                               showDialog(
@@ -89,19 +85,14 @@ class TransactionsHistoryPage extends StatelessWidget {
                                   },
                                 ),
                               );
-                            }
-                          : null,
+                            },
 
-                      onEdit: showActions
-                          ? () {
-                              _showEditDialog(context, transaction);
-                            }
-                          : null,
+                      onEdit: () {
+                              showEditDialog(context, transaction);
+                            },
                     );
                   },
                 );
-              },
-            );
           }
 
           return const SizedBox.shrink();
@@ -110,7 +101,7 @@ class TransactionsHistoryPage extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context, Transaction transaction) {
+  void showEditDialog(BuildContext context, Transaction transaction) {
     final descriptionController = TextEditingController(
       text: transaction.description,
     );

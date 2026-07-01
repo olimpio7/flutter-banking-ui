@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
-import 'user_avatar.dart';
+import 'avatar.dart';
 
 class TransactionsRecently extends StatelessWidget {
   final String namePayment;

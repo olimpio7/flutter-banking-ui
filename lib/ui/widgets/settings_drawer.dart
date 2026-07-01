@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_banking_ui/bloc/bank_mode/bank_mode_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/my_account/my_account_bloc.dart';
@@ -9,11 +8,13 @@ import '../../bloc/contact/contact_bloc.dart';
 import '../../bloc/contact/contact_event.dart';
 import '../../bloc/transactions/transaction_bloc.dart';
 import '../../bloc/transactions/transaction_event.dart';
-import '../../data/database/app_database.dart';
+import '../../database/app_database.dart';
 import '../../theme/app_theme.dart';
 import '../pages/initial_page.dart';
+import 'package:drift_db_viewer/drift_db_viewer.dart';
+
 import 'drawer_account_actions.dart';
-import 'user_avatar.dart';
+import 'avatar.dart';
 import 'confirmation_dialog.dart';
 
 class SettingsDrawer extends StatelessWidget {
@@ -63,18 +64,7 @@ class SettingsDrawer extends StatelessWidget {
                   },
                 ),
 
-                BlocBuilder<BankModeCubit, bool>(
-                  builder: (context, isBankModeOn) {
-                    return SwitchListTile(
-                      secondary: const Icon(Icons.account_balance),
-                      title: const Text('Modo Bancário'),
-                      value: isBankModeOn,
-                      onChanged: (value) {
-                        context.read<BankModeCubit>().toggleMode();
-                      },
-                    );
-                  },
-                ),
+
 
                 BlocBuilder<ThemeCubit, ThemeMode>(
                   bloc: ThemeCubit.instance,
@@ -88,6 +78,20 @@ class SettingsDrawer extends StatelessWidget {
                       onTap: () {
                         ThemeCubit.instance.toggleTheme(!isDark);
                       },
+                    );
+                  },
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.storage),
+                  title: const Text('Visualizar Banco'),
+                  onTap: () {
+                    final db = context.read<AppDatabase>();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DriftDbViewer(db),
+                      ),
                     );
                   },
                 ),

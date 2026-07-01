@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/contact/contact_bloc.dart';
 import '../../bloc/contact/contact_state.dart';
 import '../widgets/soft_container.dart';
-import '../widgets/user_avatar.dart';
+import '../widgets/avatar.dart';
 
 class ManageFavoritesPage extends StatelessWidget {
   const ManageFavoritesPage({super.key});
@@ -15,7 +15,10 @@ class ManageFavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Gerenciar Favoritos')),
+      appBar: AppBar(
+        title: const Text('Gerenciar Favoritos'),
+        backgroundColor: Color(0xFFF5F5F7),
+      ),
       body: BlocListener<ContactBloc, ContactState>(
         listener: (context, state) {
           if (state is ContactErrorState) {

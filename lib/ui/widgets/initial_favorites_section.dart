@@ -62,12 +62,10 @@ class InitialFavoritesSection extends StatelessWidget {
 
                     final contact = state.contacts[index];
 
-                    return TextButton(
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      onPressed: () {
+                    return Favorites(
+                      name: contact.name,
+                      imagePath: contact.avatar,
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -78,10 +76,6 @@ class InitialFavoritesSection extends StatelessWidget {
                           ),
                         );
                       },
-                      child: Favorites(
-                        name: contact.name,
-                        imagePath: contact.avatar,
-                      ),
                     );
                   },
                 ),

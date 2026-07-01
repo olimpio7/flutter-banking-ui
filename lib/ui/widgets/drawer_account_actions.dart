@@ -6,7 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import '../../bloc/my_account/my_account_bloc.dart';
 import '../../bloc/my_account/my_account_event.dart';
 import '../../bloc/my_account/my_account_state.dart';
-import 'user_avatar.dart';
+import 'soft_dialog.dart';
+import 'avatar.dart';
 
 class DrawerAccountActions {
   static void showEditProfileDialog(BuildContext context) {
@@ -24,30 +25,42 @@ class DrawerAccountActions {
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Editar Perfil'),
+            return SoftDialog(
+              title: 'Editar Perfil',
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  UserAvatar(
-                    name: nameController.text.isEmpty ? account.name : nameController.text,
-                    imagePath: selectedPath,
-                    radius: 45,
+                  Center(
+                    child: GestureDetector(
+                      onTap: () async {
+                        final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                        if (image != null) {
+                          setDialogState(() {
+                            selectedPath = image.path;
+                          });
+                        }
+                      },
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          UserAvatar(
+                            name: nameController.text.isEmpty ? account.name : nameController.text,
+                            imagePath: selectedPath,
+                            radius: 45,
+                          ),
+                          Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                            ),
+                            padding: const EdgeInsets.all(6),
+                            child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  
-                  TextButton.icon(
-                    onPressed: () async {
-                      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-                      if (image != null) {
-                        setDialogState(() {
-                          selectedPath = image.path;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.photo_library),
-                    label: const Text('Alterar Foto'),
-                  ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 24),
                   TextField(
                     controller: nameController,
                     decoration: const InputDecoration(
@@ -60,7 +73,7 @@ class DrawerAccountActions {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text('Cancelar'),
+                  child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
                 ),
                 ElevatedButton(
                   onPressed: () {

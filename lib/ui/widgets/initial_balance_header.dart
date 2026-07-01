@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../data/database/app_database.dart';
+import '../../database/app_database.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/formatters.dart';
 import 'soft_container.dart';
-import 'user_avatar.dart';
+import 'avatar.dart';
 
 class InitialBalanceHeader extends StatelessWidget {
   final MyAccount account;

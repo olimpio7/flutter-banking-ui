@@ -77,10 +77,8 @@ class InitialRecentTransactions extends StatelessWidget {
                     ),
                   );
                 }
-                // verificar a altura da tela do dispositivo
                 final screenHeight = MediaQuery.of(context).size.height;
                 final int takeCount = screenHeight < 700 ? 3 : 5;
-                
                 final recentTransactions = state.transactions.reversed.take(takeCount).toList();
 
                 return BlocBuilder<ContactBloc, ContactState>(

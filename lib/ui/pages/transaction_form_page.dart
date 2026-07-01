@@ -6,14 +6,14 @@ import 'package:flutter_banking_ui/bloc/my_account/my_account_bloc.dart';
 import 'package:flutter_banking_ui/bloc/my_account/my_account_state.dart';
 import 'package:flutter_banking_ui/bloc/transactions/transaction_bloc.dart';
 import 'package:flutter_banking_ui/bloc/transactions/transaction_event.dart';
-import 'package:flutter_banking_ui/data/database/app_database.dart';
+import 'package:flutter_banking_ui/database/app_database.dart';
 import 'package:flutter_banking_ui/utils/formatters.dart';
-import 'package:flutter_banking_ui/utils/image_helper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../theme/app_theme.dart';
 import '../widgets/favorites.dart';
 import '../widgets/soft_container.dart';
+import '../widgets/avatar.dart';
 
 class TransactionFormPage extends StatefulWidget {
   final bool isDeposit;
@@ -28,13 +28,13 @@ class TransactionFormPage extends StatefulWidget {
 class _TransactionFormPageState extends State<TransactionFormPage> {
   final _descriptionController = TextEditingController();
   final _valueController = TextEditingController(text: 'R\$ 0,00');
-  Contact? _selectedContact;
+  Contact? selectedContact;
 
   @override
   void initState() {
     super.initState();
     if (widget.preSelectedContact != null) {
-      _selectedContact = widget.preSelectedContact;
+      selectedContact = widget.preSelectedContact;
     }
   }
 
@@ -54,7 +54,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     if (value == null || value <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor, informe um valor maior que zero.'),
+          content: Text('Informe um valor maior que zero.'),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -64,7 +64,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     if (description.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor, preencha o título.'),
+          content: Text('Preencha o título.'),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -86,7 +86,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       value: value,
       type: widget.isDeposit ? 'income' : 'expense',
       createdAt: DateTime.now(),
-      contactId: drift.Value(_selectedContact?.id),
+      contactId: drift.Value(selectedContact?.id),
     );
 
     context.read<TransactionBloc>().add(CreateTransactionEvent(transaction: transaction));
@@ -94,7 +94,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   }
 
   List<String> get _quickTags {
-    final name = _selectedContact?.name.split(' ').first;
+    final name = selectedContact?.name.split(' ').first;
     if (widget.isDeposit) {
       return [
         if (name != null) 'Pix de $name',
@@ -141,7 +141,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               ),
               const SizedBox(height: 32),
 
-              if (_selectedContact != null)
+              if (selectedContact != null)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -149,21 +149,16 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: Row(
                         children: [
-                          CircleAvatar(
+                          UserAvatar(
+                            name: selectedContact!.name,
+                            imagePath: selectedContact!.avatar,
                             radius: 20,
-                            backgroundColor: Colors.grey[200],
-                            backgroundImage: _selectedContact!.avatar != null 
-                                ? ImageHelper.getImageProvider(_selectedContact!.avatar!)
-                                : null,
-                            child: _selectedContact!.avatar == null
-                                ? Text(_selectedContact!.name[0], style: const TextStyle(color: Colors.black54))
-                                : null,
                           ),
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(_selectedContact!.name, style: text.copyWith(fontWeight: FontWeight.bold)),
+                              Text(selectedContact!.name, style: text.copyWith(fontWeight: FontWeight.bold)),
                               Text(widget.isDeposit ? 'Receber de' : 'Enviando para', style: subText.copyWith(fontSize: 12)),
                             ],
                           ),
@@ -172,7 +167,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     ),
                     if (widget.preSelectedContact == null)
                       GestureDetector(
-                        onTap: () => setState(() => _selectedContact = null),
+                        onTap: () => setState(() => selectedContact = null),
                         child: const SoftContainer(
                           padding: EdgeInsets.all(12),
                           child: Icon(Icons.close, size: 16),
@@ -187,21 +182,31 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                       if (state.contacts.isEmpty) {
                          return const SizedBox();
                       }
-                      return SizedBox(
-                        height: 95,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: state.contacts.length,
-                          itemBuilder: (context, index) {
-                            final contact = state.contacts[index];
-                            return GestureDetector(
-                              onTap: () => setState(() => _selectedContact = contact),
-                              child: Favorites(
-                                name: contact.name,
-                                imagePath: contact.avatar,
+                      return SoftContainer(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 4.0, bottom: 8.0),
+                              child: Text('Favoritos', style: text.copyWith(fontWeight: FontWeight.bold, fontSize: 14)),
+                            ),
+                            SizedBox(
+                              height: 95,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: state.contacts.length,
+                                itemBuilder: (context, index) {
+                                  final contact = state.contacts[index];
+                                  return Favorites(
+                                    name: contact.name,
+                                    imagePath: contact.avatar,
+                                    onTap: () => setState(() => selectedContact = contact),
+                                  );
+                                },
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -253,7 +258,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
               TextField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(
-                  labelText: 'Título (Ex: Pizza, Aluguel)',
+                  labelText: 'Título',
                   border: OutlineInputBorder(),
                 ),
               ),

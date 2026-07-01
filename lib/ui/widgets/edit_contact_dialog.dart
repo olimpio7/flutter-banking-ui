@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/contact/contact_bloc.dart';
 import '../../bloc/contact/contact_event.dart';
-import '../../data/database/app_database.dart';
+import '../../database/app_database.dart';
 import '../../utils/image_helper.dart';
 import 'soft_dialog.dart';
 import 'package:drift/drift.dart' as drift;

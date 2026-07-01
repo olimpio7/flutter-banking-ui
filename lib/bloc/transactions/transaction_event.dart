@@ -1,4 +1,4 @@
-import 'package:flutter_banking_ui/data/database/app_database.dart';
+import 'package:flutter_banking_ui/database/app_database.dart';
 
 abstract class TransactionEvent {}
 

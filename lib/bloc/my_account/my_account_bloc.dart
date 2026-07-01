@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../data/database/dao/my_account_dao.dart';
+import '../../database/dao/my_account_dao.dart';
 import 'my_account_event.dart';
 import 'my_account_state.dart';
 

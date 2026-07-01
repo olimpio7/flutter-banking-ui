@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../data/database/dao/contact_dao.dart';
-import '../../data/database/dao/transaction_dao.dart';
+import '../../database/dao/contact_dao.dart';
+import '../../database/dao/transaction_dao.dart';
 import 'contact_event.dart';
 import 'contact_state.dart';
 

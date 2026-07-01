@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/my_account/my_account_bloc.dart';
 import '../../bloc/my_account/my_account_event.dart';
-import '../../data/database/app_database.dart';
+import '../../database/app_database.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/formatters.dart';
 import '../widgets/soft_container.dart';

@@ -13,7 +13,7 @@ class UserAvatar extends StatelessWidget {
     this.radius = 25,
   });
 
-  String _getInitials(String name) {
+  String getInitials(String name) {
     if (name.trim().isEmpty) return '?';
     final parts = name.trim().split(' ');
     if (parts.length == 1) {
@@ -31,7 +31,7 @@ class UserAvatar extends StatelessWidget {
           : null,
       child: imagePath == null
           ? Text(
-              _getInitials(name),
+              getInitials(name),
               style: TextStyle(
                 fontSize: radius * 0.6,
                 fontWeight: FontWeight.bold,
