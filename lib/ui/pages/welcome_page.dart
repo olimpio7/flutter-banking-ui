@@ -76,7 +76,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       controller: _nameController,
                       style: text,
                       decoration: const InputDecoration(
-                        labelText: 'Seu Nome',
+                        labelText: 'Nome',
                         prefixIcon: Icon(Icons.person),
                         border: OutlineInputBorder(),
                       ),
@@ -94,7 +94,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       keyboardType: TextInputType.number,
                       inputFormatters: [CurrencyInputFormatter()],
                       decoration: const InputDecoration(
-                        labelText: 'Saldo Inicial (R\$)',
+                        labelText: 'Saldo Inicial',
                         prefixIcon: Icon(Icons.account_balance_wallet),
                         border: OutlineInputBorder(),
                       ),

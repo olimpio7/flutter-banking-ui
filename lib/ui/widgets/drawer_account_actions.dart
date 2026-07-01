@@ -51,7 +51,7 @@ class DrawerAccountActions {
                   TextField(
                     controller: nameController,
                     decoration: const InputDecoration(
-                      labelText: 'Nome do Titular',
+                      labelText: 'Nome',
                       border: OutlineInputBorder(),
                     ),
                   ),
