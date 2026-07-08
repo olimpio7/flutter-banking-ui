@@ -25,8 +25,9 @@ class _ContactDialogState extends State<ContactDialog> {
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
+      final permanentPath = await ImageHelper.saveImagePermanently(image.path);
       setState(() {
-        _selectedAvatar = image.path;
+        _selectedAvatar = permanentPath;
       });
     }
   }

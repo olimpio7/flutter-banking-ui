@@ -8,6 +8,7 @@ import '../../viewmodels/my_account/my_account_event.dart';
 import '../../viewmodels/my_account/my_account_state.dart';
 import 'soft_dialog.dart';
 import 'avatar.dart';
+import '../../utils/image_helper.dart';
 
 class DrawerAccountActions {
   static void showEditProfileDialog(BuildContext context) {
@@ -35,8 +36,9 @@ class DrawerAccountActions {
                       onTap: () async {
                         final XFile? image = await picker.pickImage(source: ImageSource.gallery);
                         if (image != null) {
+                          final permanentPath = await ImageHelper.saveImagePermanently(image.path);
                           setDialogState(() {
-                            selectedPath = image.path;
+                            selectedPath = permanentPath;
                           });
                         }
                       },
