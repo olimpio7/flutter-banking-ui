@@ -31,13 +31,13 @@ class MainApp extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
         BlocProvider(
-          create: (_) => MyAccountBloc(MyAccountDao(database))..add(LoadMyAccountEvent()),
+          create: (context) => MyAccountBloc(MyAccountDao(context.read<AppDatabase>()))..add(LoadMyAccountEvent()),
         ),
         BlocProvider(
-          create: (_) => ContactBloc(ContactDao(database), TransactionDao(database))..add(LoadContactsEvent()),
+          create: (context) => ContactBloc(ContactDao(context.read<AppDatabase>()), TransactionDao(context.read<AppDatabase>()))..add(LoadContactsEvent()),
         ),
         BlocProvider(
-          create: (context) => TransactionBloc(TransactionDao(database),
+          create: (context) => TransactionBloc(TransactionDao(context.read<AppDatabase>()),
           context.read<MyAccountBloc>())..add(LoadTransactionEvent()),
         ),
 
