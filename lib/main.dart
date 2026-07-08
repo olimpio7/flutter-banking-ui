@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_banking_ui/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/contact/contact_bloc.dart';
-import 'bloc/contact/contact_event.dart';
-import 'bloc/my_account/my_account_bloc.dart';
-import 'bloc/my_account/my_account_event.dart';
-import 'bloc/transactions/transaction_bloc.dart';
-import 'bloc/transactions/transaction_event.dart';
-import 'database/app_database.dart';
-import 'database/dao/contact_dao.dart';
-import 'database/dao/my_account_dao.dart';
-import 'database/dao/transaction_dao.dart';
-import 'ui/pages/initial_page.dart';
+import 'viewmodels/contact/contact_bloc.dart';
+import 'viewmodels/contact/contact_event.dart';
+import 'viewmodels/my_account/my_account_bloc.dart';
+import 'viewmodels/my_account/my_account_event.dart';
+import 'viewmodels/transactions/transaction_bloc.dart';
+import 'viewmodels/transactions/transaction_event.dart';
+import 'data/app_database.dart';
+import 'repositories/contact_dao.dart';
+import 'repositories/my_account_dao.dart';
+import 'repositories/transaction_dao.dart';
+import 'views/pages/initial_page.dart';
 
 void main() {
   runApp(MainApp(database: AppDatabase()));
